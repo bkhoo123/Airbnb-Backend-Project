@@ -1,5 +1,4 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
@@ -7,55 +6,36 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Spots', {
+    await queryInterface.createTable('Reviews', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      ownerId: {
+      spotId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        references: {
+          model: 'Spot'
+        },
+        allowNull: false
+      },
+      userId: {
+        type: Sequelize.INTEGER,
         references: {
           model: 'User'
-        }
+        },
+        allowNull: false
       },
-      address: {
+      review: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      city: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      state: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      country: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      lat: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
-      lgn: {
-        type: Sequelize.FLOAT
-      },
-      name: {
-        type: Sequelize.STRING(50),
-        allowNull: false
-      },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      price: {
-        type: Sequelize.FLOAT,
+      stars: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {
@@ -71,7 +51,7 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = "Spots"
-    await queryInterface.dropTable('Spots');
+    options.tableName = "Reviews"
+    await queryInterface.dropTable('Reviews');
   }
 };

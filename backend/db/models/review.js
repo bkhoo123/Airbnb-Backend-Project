@@ -1,7 +1,7 @@
 'use strict';
 const {Model, Validator} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Booking extends Model {
+  class Review extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,17 +9,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Booking.belongsTo(
+      Review.belongsTo(
         models.User,
         {foreignKey: 'userId'}
-      ),
-      Booking.belongsTo(
+      )
+      Review.belongsTo(
         models.Spot,
         {foreignKey: 'spotId'}
       )
+      Review.hasMany(
+        models.ReviewImage,
+        {foreignKey: 'reviewId'}
+      )
     }
   }
-  Booking.init({
+  Review.init({
     spotId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -28,11 +32,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    startDate: DataTypes.DATE,
-    endDate: DataTypes.DATE
+    review: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    stars: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
+        max: 5,
+        isNumber(value) {
+          if (isNaN(value)) throw new Error("Must be a number between 1 and 5")
+        }
+      }
+    }
   }, {
     sequelize,
-    modelName: 'Booking',
+    modelName: 'Review',
   });
-  return Booking;
+  return Review;
 };

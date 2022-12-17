@@ -9,6 +9,8 @@ const router = express.Router();
 
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+
+const {Op} = require("sequelize")
 // ...
 
 // will check if credentials or password is empty and if it is an error will be returned
@@ -23,6 +25,10 @@ const validateLogin = [
     handleValidationErrors
   ];
 
+// Get the Current User
+router.get('/', validateLogin, async (req, res, next) => {
+  
+})
 
 
 // Log in
@@ -39,18 +45,37 @@ router.post('/', validateLogin, async (req, res, next) => {
         return next(err);
       }
   
-      await setTokenCookie(res, user);
-  
-      return res.json({
-        user: {
-            id,
-            firstName,
-            lastName,
-            email,
-            userName,
+      
+
+      let findUser = await User.findOne({
+        where: {
+          [Op.or]: [{email: credential}, {username: credential}]
         }
-      });
-    }
+      })
+      
+      try {
+        return res.json({
+          user: {
+              id: findUser.id,
+              firstName: findUser.firstName,
+              lastName: findUser.lastName,
+              email: credential,
+              username: findUser.username,
+              token: await setTokenCookie(res, user)
+          }
+        });
+      } catch (error){
+        res.status(400)
+        return res.json({
+          message: "Validation error",
+          statusCode: 400,
+          errors: {
+            credential: "Email or username is required",
+            password: "Password is required"
+          }
+        })
+      }   
+  }
 );
 
 
