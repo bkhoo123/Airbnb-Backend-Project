@@ -10,6 +10,8 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
+const {requireAuth} = require('../../utils/auth')
+
 const {Op} = require("sequelize")
 // ...
 
@@ -25,10 +27,7 @@ const validateLogin = [
     handleValidationErrors
   ];
 
-// Get the Current User
-router.get('/', validateLogin, async (req, res, next) => {
-  
-})
+
 
 
 // Log in
@@ -45,8 +44,6 @@ router.post('/', validateLogin, async (req, res, next) => {
         return next(err);
       }
   
-      
-
       let findUser = await User.findOne({
         where: {
           [Op.or]: [{email: credential}, {username: credential}]
@@ -81,30 +78,30 @@ router.post('/', validateLogin, async (req, res, next) => {
 
 
 // Restore session user
-router.get(
-    '/',
-    restoreUser,
-    (req, res) => {
-      const { user } = req;
-      if (user) {
-        return res.json({
-          user: user.toSafeObject()
-        });
-      } else return res.json({ user: null });
-    }
-  );
-  
-  // ...
+router.get('/', restoreUser, (req, res, next) => {
+  const { user } = req;
+  if (user) {
+    return res.json({
+      user: user.toSafeObject()
+    });
+  } else {
+    res.json({ user: null });
+    next()
+  }
+});
+
+// Get the Current User
+router.get('/', requireAuth, async (req, res, next) => {
+  let currentUser = req.user
+  return res.json(currentUser)
+})
 
 
-
-// Log out
-router.delete(
-    '/',
-    (_req, res) => {
-      res.clearCookie('token');
-      return res.json({ message: 'success' });
-    }
+// Log out No longer functioning
+router.delete('/', (_req, res) => {
+    res.clearCookie('token');
+    return res.json({ message: 'success' });
+  }
 );
   
 
