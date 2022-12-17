@@ -47,11 +47,11 @@ router.post('/', validateLogin, async (req, res, next) => {
             firstName,
             lastName,
             email,
-            userName
+            userName,
         }
       });
     }
-  );
+);
 
 
 
