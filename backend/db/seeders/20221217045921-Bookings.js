@@ -17,12 +17,6 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   options.tableName = 'Reviews';
-   await queryInterface.bulkInsert(options, [
-    {
-      
-    }
-   ])
   },
 
   async down (queryInterface, Sequelize) {
