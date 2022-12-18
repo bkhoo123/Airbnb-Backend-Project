@@ -18,10 +18,11 @@ module.exports = {
       },
       ownerId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'User'
-        }
+          model: 'User',
+          id: 'ownerId'
+        },
+        allowNull: false
       },
       address: {
         type: Sequelize.STRING,
@@ -43,7 +44,7 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false
       },
-      lgn: {
+      lng: {
         type: Sequelize.FLOAT
       },
       name: {
@@ -71,7 +72,7 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = "Spots"
+    options.tableName = 'Spots'
     await queryInterface.dropTable('Spots');
   }
 };

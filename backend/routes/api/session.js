@@ -1,19 +1,13 @@
 // backend/routes/api/session.js
 const express = require('express');
-
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
-
 const router = express.Router();
-
-
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+const { requireAuth } = require('../../utils/auth')
+const { Op } = require("sequelize")
 
-const {requireAuth} = require('../../utils/auth')
-
-const {Op} = require("sequelize")
-// ...
 
 // will check if credentials or password is empty and if it is an error will be returned
 const validateLogin = [
@@ -25,9 +19,7 @@ const validateLogin = [
       .exists({ checkFalsy: true })
       .withMessage('Please provide a password.'),
     handleValidationErrors
-  ];
-
-
+];
 
 
 // Log in
@@ -74,7 +66,6 @@ router.post('/', validateLogin, async (req, res, next) => {
       }   
   }
 );
-
 
 
 // Restore session user
