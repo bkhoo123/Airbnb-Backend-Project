@@ -2,11 +2,6 @@ const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 
-// const { User } = require('../../db/models');
-// const { Spot } = require('../../db/models');
-// const {SpotImage} = require('../../db/models')
-// const {Review} = require('../../db/models')
-
 const {User, Spot, SpotImage, Review, sequelize} = require('../../db/models')
 
 const router = express.Router();
@@ -21,25 +16,40 @@ const {Op} = require("sequelize")
 
 
 
-//Get All Spots
+//! Get All Spots
 //? Avg Rating
 //? previewImage
 router.get('/', async (req, res, next) => {
     let spot = await Spot.findAll()
-    if (spot) {
-        res.status(200)
-        return res.json({
-            Spots: spot
-        })
-    }
+
+    const {id, ownerId, address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt} = spot
+
+
+    // let avgRating = await Review.findAll({
+    //     where: {
+    //         userId: currentUser
+    //     },
+    //     attributes: [
+    //         [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
+    //     ]
+    // })
+
+    // let previewImage = await SpotImage.findOne({
+    //     where: {
+    //         spotId: id
+    //     },
+    //     attributes: ['url']
+    // })
+
+    res.status(200)
+    return res.json({
+        Spots: spot    
+    })
+    
 })
 
 
-
-// Get All Spots Owned by the Current User
-//? Avg Rating
-//? previewImage
-
+//! Get All Spots Owned by the Current User
 router.get('/current', requireAuth, async(req, res, next) => {
     let currentUser = req.user.id
     let spot = await Spot.findOne({
@@ -63,13 +73,11 @@ router.get('/current', requireAuth, async(req, res, next) => {
 
     let previewImage = await SpotImage.findOne({
         where: {
-            spotId: 3
+            spotId: id
         },
         attributes: ['url']
     })
     
-    
- 
     res.status(200)
     return res.json({
         
@@ -92,7 +100,6 @@ router.get('/current', requireAuth, async(req, res, next) => {
             previewImage: previewImage.dataValues.url
             }
         ]
-        // previewImage: previewImage.dataValues.url
     })
 })
 
@@ -100,7 +107,7 @@ router.get('/current', requireAuth, async(req, res, next) => {
 
 
 
-// Get details of a Spot from an id 
+//! Get details of a Spot from an id 
 router.get('/:spotId', async (req, res, next) => {
     let spotId = req.params.spotId
 
