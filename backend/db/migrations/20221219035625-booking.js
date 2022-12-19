@@ -19,14 +19,14 @@ module.exports = {
       spotId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Spot'
+          model: 'Spots'
         },
         allowNull: false
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'User'
+          model: 'Users'
         },
         allowNull: false
       },
@@ -49,7 +49,8 @@ module.exports = {
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = "Bookings"
-    await queryInterface.dropTable('Bookings');
+    options.tableName = 'Bookings'
+    await queryInterface.dropTable(options);
   }
 };
+

@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         models.SpotImage,
         {foreignKey: 'spotId'}
       )
+      Spot.hasMany(
+        models.Booking,
+        {foreignKey: 'spotId'}
+      )
     }
   }
   Spot.init({
@@ -34,7 +38,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [4,100]
+      }
     },
     state: {
       type: DataTypes.STRING,
@@ -44,8 +51,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    lat: DataTypes.FLOAT,
-    lng: DataTypes.FLOAT,
+    lat: {
+      type: DataTypes.FLOAT,
+      validate: {
+        min: -200,
+        max: 200
+      }
+    },
+    lng: {
+      type: DataTypes.FLOAT,
+      validate: {
+        min: -200,
+        max: 200
+      }
+    },
     name: {
       type: DataTypes.STRING(50),
       allowNull: false

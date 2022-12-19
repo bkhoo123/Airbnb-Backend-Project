@@ -19,14 +19,14 @@ module.exports = {
       spotId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Spot'
+          model: 'Spots'
         },
         allowNull: false
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'User'
+          model: 'Users'
         },
         allowNull: false
       },
@@ -48,7 +48,7 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    });
+    }, options);
   },
   async down(queryInterface, Sequelize) {
     options.tableName = "Reviews"

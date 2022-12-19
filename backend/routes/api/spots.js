@@ -2,8 +2,12 @@ const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 
-const { User } = require('../../db/models');
-const { Spot } = require('../../db/models');
+// const { User } = require('../../db/models');
+// const { Spot } = require('../../db/models');
+// const {SpotImage} = require('../../db/models')
+// const {Review} = require('../../db/models')
+
+const {User, Spot, SpotImage, Review, sequelize} = require('../../db/models')
 
 const router = express.Router();
 
@@ -17,11 +21,113 @@ const {Op} = require("sequelize")
 
 
 
-//Create a spot
-router.post('/', requireAuth, async (req, res, next) => {
-    const {address, city, state, country, lat, lng, name, description, price} = req.body
+//Get All Spots
+//? Avg Rating
+//? previewImage
+router.get('/', async (req, res, next) => {
+    let spot = await Spot.findAll()
+    if (spot) {
+        res.status(200)
+        return res.json({
+            Spots: spot
+        })
+    }
+})
 
-    let newSpot = await Spot.create({
+
+
+// Get All Spots Owned by the Current User
+//? Avg Rating
+//? previewImage
+
+router.get('/current', requireAuth, async(req, res, next) => {
+    let currentUser = req.user.id
+    let spot = await Spot.findAll({
+        where: {
+            id: currentUser
+        }
+    })
+
+    let avgStarRating = await Review.findOne({
+        where: {
+            spotId: currentUser
+        },
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('stars')), 'avgStarRating']
+        ]
+    })
+
+    let avgRating = await Spot.findAll({
+        include: {
+            model: Review,
+            attributes: [
+                [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
+            ]
+        }
+    })
+
+
+    res.status(200)
+    return res.json({
+        spot,
+        avgRating: avgRating.dataValues.Reviews.avgRating
+    })
+})
+
+
+
+
+// Get details of a Spot from an id 
+router.get('/:spotId', async (req, res, next) => {
+    let spotId = req.params.spotId
+
+    let spotDetails = await Spot.findByPk(spotId)
+
+    if (!spotDetails) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    const {id, ownerId, address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt} = spotDetails
+
+    let numReviews = await Review.findOne({
+        where: {
+            spotId: spotId
+        },
+        attributes: [
+            [sequelize.fn('Count', sequelize.col('review')), 'numReviews']
+        ]
+    })
+    
+    let avgStarRating = await Review.findOne({
+        where: {
+            spotId: spotId
+        },
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('stars')), 'avgStarRating']
+        ]
+    })
+
+    let spotImage = await SpotImage.findAll({
+        where: {
+            spotId: spotId
+        }
+    })
+
+    let owner = await User.findAll({
+        attributes: ['id', 'firstName', 'lastName'],
+        where: {
+            id: spotDetails.dataValues.ownerId
+        }
+    })
+    
+    res.status(200)
+    return res.json({
+        id,
+        ownerId,
         address,
         city,
         state,
@@ -30,14 +136,38 @@ router.post('/', requireAuth, async (req, res, next) => {
         lng,
         name,
         description,
-        price
+        price,
+        createdAt,
+        updatedAt,
+        numReviews: numReviews.dataValues.numReviews,
+        avgStarRating: avgStarRating.dataValues.avgStarRating,
+        spotImage,
+        owner
     })
+})
 
 
-    if (newSpot) {
+//Create a spot
+router.post('/', requireAuth, handleValidationErrors, async (req, res, next) => {
+    const {address, city, state, country, lat, lng, name, description, price} = req.body
+
+    try {
+        let newSpot = await Spot.create({
+            ownerId: req.user.id,
+            address,
+            city,
+            state,
+            country,
+            lat,
+            lng,
+            name,
+            description,
+            price
+        })
         res.status(201)
         return res.json(newSpot)
-    } else {
+
+    } catch (error) {
         res.status(400)
         return res.json({
             message: "Validation Error",
