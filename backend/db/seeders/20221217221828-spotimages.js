@@ -30,12 +30,12 @@ module.exports = {
       preview: true
     },
     {
-      spotId: 2,
+      spotId: 3,
       url: 'fakehome',
       preview: false
     },
     {
-      spotId: 2, 
+      spotId: 4, 
       url: 'Asfakeasitgets',
       preview: true
     }
