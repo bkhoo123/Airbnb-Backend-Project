@@ -12,15 +12,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */options.tableName = 'Spots'
+    options.tableName = 'Spots'
     await queryInterface.bulkInsert(options, [
       { 
         ownerId: 1,
@@ -35,7 +27,7 @@ module.exports = {
         price: 275.50
       },
       {
-        ownerId: 1,
+        ownerId: 2,
         address: '307 El Dorado Dr',
         city: 'Daly City',
         state: 'California',
@@ -47,7 +39,7 @@ module.exports = {
         price: 302.1
       },
       {
-        ownerId: 2,
+        ownerId: 3,
         address: 'Disney land',
         city: 'Anaheim',
         state: 'California',
@@ -59,7 +51,7 @@ module.exports = {
         price: 1002.50
       },
       {
-        ownerId: 2,
+        ownerId: 4,
         address: 'Gods place',
         city: 'Heaven',
         state: 'Cloud area',
@@ -70,7 +62,7 @@ module.exports = {
         description: 'Where you go in the afterlife',
         price: 783.12
       }
-    ])
+    ], {})
   },
 
   async down (queryInterface, Sequelize) {
@@ -81,7 +73,10 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     options.tableName = 'Spots'
-    await queryInterface.bulkDelete(options, {}, {})
+    const Op = Sequelize.Op
+    await queryInterface.bulkDelete(options, {
+      address: { [Op.in]: ['27 Weston Dr', '307 El Dorado Dr', 'Disney land', 'Gods place']}
+    }, {})
   }
 };
 
