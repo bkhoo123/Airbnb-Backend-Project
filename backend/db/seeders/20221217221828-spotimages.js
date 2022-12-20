@@ -25,7 +25,7 @@ module.exports = {
       preview: true
     },
     {
-      spotId: 1,
+      spotId: 2,
       url: 'fakeurl2',
       preview: true
     },
