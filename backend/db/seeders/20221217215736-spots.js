@@ -35,7 +35,7 @@ module.exports = {
         price: 275.50
       },
       {
-        ownerId: 1,
+        ownerId: 2,
         address: '307 El Dorado Dr',
         city: 'Daly City',
         state: 'California',
@@ -47,7 +47,7 @@ module.exports = {
         price: 302.1
       },
       {
-        ownerId: 2,
+        ownerId: 3,
         address: 'Disney land',
         city: 'Anaheim',
         state: 'California',
@@ -59,7 +59,7 @@ module.exports = {
         price: 1002.50
       },
       {
-        ownerId: 2,
+        ownerId: 4,
         address: 'Gods place',
         city: 'Heaven',
         state: 'Cloud area',
