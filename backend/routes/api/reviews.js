@@ -133,13 +133,110 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
 
 
 //! Edit a Review
-router.put('/:reviewId', requireAuth, async (req, res, next) => {
+//? Review must belong to the current user
+router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, next) => {
+    let currentUser = req.user.id // 2
+    let reviewId = req.params.reviewId
 
+    const {review, stars} = req.body
+    
+
+    //* Checking if review belongs to the current user
+    let userId = await Review.findByPk(reviewId)
+    let userIdJson = userId.toJSON()
+    if (userIdJson.userId !== currentUser) {
+        res.status(404)
+        return res.json({
+            message: "You are not authorized to edit this review",
+            statusCode: 404
+        })
+    }
+
+    //* Checking if a review exists with a specified id
+    let updateReview = await Review.findByPk(reviewId)
+
+    if (!updateReview) {
+        res.status(404)
+        return res.json({
+            message: "Review couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    updateReview.set({
+        review,
+        stars
+    })
+
+    if (stars > 5 || stars < 1 || review === '') {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                review: "Review text is required",
+                stars: "Stars must be an integer from 1 to 5"
+            }
+        })
+    }
+
+    //* Updating the review unless it hits validation errors
+    try {
+        updateReview.save()
+        res.status(200)
+        res.json(updateReview)
+    } catch (error) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                review: "Review text is required",
+                stars: "Stars must be an integer from 1 to 5"
+            }
+        })
+    }
 })
 
-//! Delete a Review
-router.delete('/:reviewId', requireAuth, async (req, res, next) => {
 
+
+//! Delete a Review
+//? Foreign Key constraint failing 
+router.delete('/:reviewId', requireAuth, async (req, res, next) => {
+    let currentUser = req.user.id
+    let reviewId = req.params.reviewId
+
+     //* Checking for proper authorization
+     let userId = await Review.findByPk(reviewId)
+     let userIdJson = userId.toJSON()
+     if (userIdJson.userId !== currentUser) {
+         res.status(400)
+         return res.json({
+             message: "You are not authorized to edit this review",
+             statusCode: 400
+        })
+    }
+
+    //! Fix this area
+    //* Checking if a review exists with a specified id
+    let deleteReview = await Review.findByPk(reviewId)
+
+    if (!deleteReview) {
+        res.status(404)
+        return res.json({
+            message: "Review couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    if (deleteReview) {
+        res.status(200) 
+        await deleteReview.destroy()
+        return res.json({
+            message: "Successfully deleted",
+            statusCode: 200
+        })
+    }
 })
 
 
