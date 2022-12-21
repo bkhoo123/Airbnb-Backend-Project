@@ -42,6 +42,8 @@ router.post('/', validateLogin, async (req, res, next) => {
         }
       })
       
+      await setTokenCookie(res, user)
+
       try {
         return res.json({
           user: {
@@ -49,8 +51,7 @@ router.post('/', validateLogin, async (req, res, next) => {
               firstName: findUser.firstName,
               lastName: findUser.lastName,
               email: credential,
-              username: findUser.username,
-              token: await setTokenCookie(res, user)
+              username: findUser.username, 
           }
         });
       } catch (error){

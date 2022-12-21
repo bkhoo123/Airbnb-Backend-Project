@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     review: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [5, 100]
+      }
     },
     stars: {
       type: DataTypes.INTEGER,
@@ -44,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         max: 5,
         isNumber(value) {
           if (isNaN(value)) throw new Error("Must be a number between 1 and 5")
+          if (value < 1 || value > 5) throw new Error("Must be a number between 1 and 5 ")
         }
       }
     }
