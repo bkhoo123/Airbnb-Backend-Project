@@ -67,6 +67,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
 })
 
 //! Add an Image to a Review based on the Review's id
+//? Extensively Tested on Postman
 router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
     let currentUser = req.user.id
     let reviewId = req.params.reviewId
@@ -74,7 +75,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
     const {url} = req.body
     
     let reviewUser = await Review.findByPk(reviewId)
-    let reviewUserJson = reviewUser.toJSON()
+    
     
     //* If review Id doesn't exist error
     if (!reviewUser) {
@@ -84,6 +85,8 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
             statusCode: 404
         })
     }
+
+    let reviewUserJson = reviewUser.toJSON()
     
     //* Only the owner of the review can post an image error
     let userId = reviewUserJson.userId
@@ -174,7 +177,6 @@ router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, n
             message: "Validation error",
             statusCode: 400,
             errors: {
-                review: "Review text is required",
                 stars: "Stars must be an integer from 1 to 5"
             }
         })
@@ -238,6 +240,17 @@ router.delete('/:reviewId', requireAuth, async (req, res, next) => {
         })
     }
 })
+
+// fanId: {
+//     type: Sequelize.INTEGER,
+//     references: {model: 'Fans'},
+//     ondelete: 'CASCADE'
+//   },
+//   playerId: {
+//     type: Sequelize.INTEGER,
+//     references: {model: 'Players'},
+//     onDelete: 'CASCADE'
+//   },
 
 
 module.exports = router

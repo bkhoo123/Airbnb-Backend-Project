@@ -14,17 +14,17 @@ const { requireAuth } = require('../../utils/auth')
 
 const {Op} = require("sequelize")
 
-
+// attributes: [
+//     [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
+// ]
 
 //! Get All Spots
 //? Avg Rating Needs fine tuning 
-//? previewImage Done December 20, 2022
-//? Completed: Seed Data, Successful response, Spot Data includes all data 
 router.get('/', async (req, res, next) => {
     let spots = await Spot.findAll({
         include: [
             {
-                model: Review
+                model: Review,
             },
             {
                 model: SpotImage
@@ -36,6 +36,7 @@ router.get('/', async (req, res, next) => {
     spots.forEach((spot) => {
         spotsList.push(spot.toJSON())
     }) 
+    console.log(spotsList[0])
     
     spotsList.forEach(spot => {
         spot.Reviews.forEach(review => {
@@ -67,9 +68,7 @@ router.get('/', async (req, res, next) => {
 
 
 //! Get All Spots Owned by the Current User
-//? An authenticated user is required for a successful response
-//? Successful response includes only spots created by the current user
-//Todo Bug Check: user past 4 
+//? Extensive Testing Completed on Postman awaiting Render Check
 router.get('/current', requireAuth, async(req, res, next) => {
     let currentUser = req.user.id
     let spot = await Spot.findOne({
@@ -96,6 +95,16 @@ router.get('/current', requireAuth, async(req, res, next) => {
     })
     let avg = avgRating.toJSON()
     
+
+    //* Handles if current user doesn't own any spots
+    if (!spot) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            message2: "You don't currently own any spots",
+            statusCode: 404
+        })
+    }
     
 
     let spots = spot.toJSON()
@@ -124,6 +133,7 @@ router.get('/current', requireAuth, async(req, res, next) => {
 
 
 //! Get details of a Spot from an id 
+//? Extensive Testing Completed on Postman
 router.get('/:spotId', async (req, res, next) => {
     let spotId = req.params.spotId
 
@@ -179,8 +189,116 @@ router.get('/:spotId', async (req, res, next) => {
 
 
 //! Create a spot
-router.post('/', requireAuth, handleValidationErrors, async (req, res, next) => {
+router.post('/', requireAuth, async (req, res, next) => {
     const {address, city, state, country, lat, lng, name, description, price} = req.body
+
+    //* Address validation error
+    if (!address) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                address: "Street address is required"
+            }
+        })
+    }
+    
+    //* City Validation Error
+    if (!city) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                city: "City is required"
+            }
+        })
+    }
+
+    //* State Validation Error
+    if (!state) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                state: "State is required"
+            }
+        })
+    }
+
+    //* Country Validation Error
+    if (!country) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                country: "Country is required"
+            }
+        })
+    }
+
+    //* Latitude Validation Error
+    if (lat > 200 || lat < -200) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                lat: "Latitude is not valid"
+            }
+        })
+    }
+
+    //* Longitude Validation Error
+    if (lng > 200 || lng < -200) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                lng: "Longitude is not valid"
+            }
+        })
+    }
+
+    //* Name must be less than 50 characters
+    if (name.length > 50) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                name: "Name must be less than 50 characters"
+            }
+        }) 
+    }
+
+    //* Description validation error
+    if (!description) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                description: "Description is required"
+            }
+        })
+    }
+
+    //* Price Validation Error
+    if (!price) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                price: "Price per day is required"
+            }
+        })
+    }
 
     try {
         let newSpot = await Spot.create({
@@ -219,13 +337,16 @@ router.post('/', requireAuth, handleValidationErrors, async (req, res, next) => 
 })
 
 //! Add an Image to a Spot based on the Spot's id
-//? Need to check if im blocking a person if its not their spot
-//TODO Double check functionality
+//? Tested Extensively on Postman 
 router.post('/:spotId/images', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
     let userId = req.user.id
 
-    if (!spotId) {
+    
+
+    let spotUser = await Spot.findByPk(spotId)
+
+    if (!spotUser) {
         res.status(404)
         return res.json({
             message: "Spot couldn't be found",
@@ -233,13 +354,14 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
         })
     }
 
-    let spotUser = await Spot.findByPk(spotId)
     let spotUserJson = spotUser.toJSON()
+
+    
     
     let ownerId = spotUserJson.ownerId
 
     if (ownerId !== userId) {
-        res.status(404)
+        res.status(403)
         return res.json({
             message: "Only the owner is authorized to add an image"
         })
@@ -272,7 +394,8 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
 
 
 //! Edit a Spot
-router.put('/:spotId', requireAuth, handleValidationErrors, async (req, res, next) => {
+//? Extensively Tested on Postman
+router.put('/:spotId', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
     let userId = req.user.id
 
@@ -295,7 +418,7 @@ router.put('/:spotId', requireAuth, handleValidationErrors, async (req, res, nex
     let ownerId = spotUserJson.ownerId
 
     if (ownerId !== userId) {
-        res.status(404)
+        res.status(403)
         return res.json({
             message: "Only the owner is authorized to update the spot"
         })
@@ -303,6 +426,114 @@ router.put('/:spotId', requireAuth, handleValidationErrors, async (req, res, nex
 
     //? Confirmed Functioning and Validation errors are functioning
     const {address, city, state, country, lat, lng, name, description, price} = req.body    
+
+    //* Address validation error
+    if (!address) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                address: "Street address is required"
+            }
+        })
+    }
+    
+    //* City Validation Error
+    if (!city) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                city: "City is required"
+            }
+        })
+    }
+
+    //* State Validation Error
+    if (!state) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                state: "State is required"
+            }
+        })
+    }
+
+    //* Country Validation Error
+    if (!country) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                country: "Country is required"
+            }
+        })
+    }
+
+    //* Latitude Validation Error
+    if (lat > 200 || lat < -200) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                lat: "Latitude is not valid"
+            }
+        })
+    }
+
+    //* Longitude Validation Error
+    if (lng > 200 || lng < -200) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                lng: "Longitude is not valid"
+            }
+        })
+    }
+
+    //* Name must be less than 50 characters
+    if (name.length > 50) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                name: "Name must be less than 50 characters"
+            }
+        }) 
+    }
+
+    //* Description validation error
+    if (!description) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                description: "Description is required"
+            }
+        })
+    }
+
+    //* Price Validation Error
+    if (!price) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                price: "Price per day is required"
+            }
+        })
+    }
 
     updatedSpot.set({
         address: address,
@@ -340,6 +571,7 @@ router.put('/:spotId', requireAuth, handleValidationErrors, async (req, res, nex
 })
 
 //! Delete a spot
+//? Extensively Tested on Postman
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
     let userId = req.user.id
@@ -378,6 +610,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 })
 
 //! Get all Reviews by a spot's Id
+//? Extensively tested on postman
 router.get('/:spotId/reviews', async (req, res, next) => {
     let spotId = req.params.spotId
     let spot = await Spot.findByPk(spotId)
@@ -399,16 +632,32 @@ router.get('/:spotId/reviews', async (req, res, next) => {
                 model: User
             },
             {
-                model: ReviewImage
+                model: ReviewImage,
             }
         ]
     })
 
     let reviewSpot = spotReview.toJSON()
     delete reviewSpot.User.username
-    delete reviewSpot.ReviewImages[0].reviewId
-    delete reviewSpot.ReviewImages[0].createdAt
-    delete reviewSpot.ReviewImages[0].updatedAt
+    
+    let reviewId = reviewSpot.id
+
+    let reviewCount = await ReviewImage.findAll({
+        where: {
+            reviewId: reviewId
+        }
+    })
+    let reviewList = []
+    reviewCount.forEach((review) => {
+        reviewList.push(review.toJSON())
+    })
+    
+
+    for (let i = 0; i < reviewList.length; i ++) {
+        delete reviewSpot.ReviewImages[i].reviewId
+        delete reviewSpot.ReviewImages[i].createdAt
+        delete reviewSpot.ReviewImages[i].updatedAt
+    }
 
     res.status(200)
     return res.json({
@@ -417,8 +666,11 @@ router.get('/:spotId/reviews', async (req, res, next) => {
 })
 
 //! Create a Review for a Spot based on the Spot's Id
+//? Needs 403 resolved
 router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
+    let currentUser = req.user.id
+    
 
     const {review, stars} = req.body
 
@@ -426,14 +678,39 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     let spotInfoJson = spotInfo.toJSON()
     let userId = spotInfoJson.ownerId
     
+
+    if (!review) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                review: "Review Text is required"
+            }
+        })
+    }
+
+    if (stars < 0 || stars > 5) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                stars: "Stars must be an integer from 1 to 5"
+            }
+        })
+    }
+    
+    
     //! Create a error response 403 when a review already exists for the spot from the current user
 
     try {
         spotReview = await Review.create({
-            userId: userId,
+            userId: currentUser,
             spotId: Number(spotId),
             review: review,
-            stars: stars
+            stars: stars,
+            
         }, {
             include: [Spot]
         })
@@ -450,6 +727,7 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
             }
         })
     }
+    
 })
 
 
