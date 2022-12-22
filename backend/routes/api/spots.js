@@ -36,7 +36,6 @@ router.get('/', async (req, res, next) => {
     spots.forEach((spot) => {
         spotsList.push(spot.toJSON())
     }) 
-    console.log(spotsList[0])
     
     spotsList.forEach(spot => {
         spot.Reviews.forEach(review => {
@@ -730,7 +729,28 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     
 })
 
+//! Get All Bookings for a Spot based on the Spot's id
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+    let spotId = req.params.spotId
+    let currentUser = req.user.id
+    
 
+    let bookings = await Booking.findAll({
+        where: {
+            spotId: spotId
+        }
+    })
+
+    let spotUser = await Spot.findByPk(spotId)
+    let spotUserJson = spotUser.toJSON()
+
+    // if (currentUser === spotUserJson.ownerId) {
+        
+    // }
+
+    return res.json(bookings)
+
+})
 
 
 module.exports = router

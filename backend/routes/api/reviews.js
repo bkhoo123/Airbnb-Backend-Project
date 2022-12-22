@@ -16,10 +16,12 @@ const {Op} = require("sequelize")
 
 
 //! Get All Reviews of the Current User
+//? Extensively Tested on Postman
 router.get('/current', requireAuth, async (req, res, next) => {
     let currentUser = req.user.id
 
-    let Reviews = await Review.findOne({
+
+    let Reviews = await Review.findAll({
         where: {
             userId: currentUser
         },  
@@ -32,37 +34,61 @@ router.get('/current', requireAuth, async (req, res, next) => {
             },
             {
                 model: ReviewImage
-            }
+            },
         ]
     })
 
-    //* preview image
-    let review = Reviews.toJSON()
-
-    let spotId = review.spotId
-    let preview = await SpotImage.findOne({
-        where: {
-            spotId: spotId
-        }
+    let reviewsList = []
+    Reviews.forEach((review) => {
+        reviewsList.push(review.toJSON())
     })
 
-    let previewJson = preview.toJSON()
-    
-    if (previewJson.preview === true) {
-        review.Spot.previewImage = previewJson.url
+    if (!Reviews) {
+        res.status(404)
+        return res.json({
+            message: "Current user does not have any reviews",
+            status: 404
+        })
+    }
+    let reviewArray = []
+    let previewImageArray = []
+
+    for (let i = 0; i < reviewsList.length; i ++) {
+        delete reviewsList[i].User.username
+        delete reviewsList[i].Spot.createdAt
+        delete reviewsList[i].Spot.updatedAt
+        reviewArray.push(reviewsList[i].spotId)
+
+
+        if (reviewsList[i].ReviewImages[i] !== undefined) {
+            delete reviewsList[i].ReviewImages[i].reviewId
+        }
+
+        if (reviewsList[i].ReviewImages[i] !== undefined) {
+            delete reviewsList[i].ReviewImages[i].createdAt
+        }
+
+        if (reviewsList[i].ReviewImages[i] !== undefined) {
+            delete reviewsList[i].ReviewImages[i].updatedAt
+        }
     }
     
-    //* deleting unneeded parameters in Spot, User and ReviewImages
-    delete review.User.username
-    delete review.Spot.createdAt
-    delete review.Spot.updatedAt
-    delete review.ReviewImages[0].reviewId
-    delete review.ReviewImages[0].createdAt
-    delete review.ReviewImages[0].updatedAt
+    for (let i = 0; i < reviewArray.length; i ++) {
+        let preview = await SpotImage.findOne({
+            where: {
+                spotId: reviewArray[i]
+            }
+        })
+        previewImageArray.push(preview.toJSON())
+        if (previewImageArray[i].preview === true) {
+            reviewsList[i].Spot.previewImage = previewImageArray[i].url
+        }
+    }
+    
     
     res.status(200)
     return res.json({
-        Reviews: [review]
+        Reviews: reviewsList
     })
 })
 
@@ -136,24 +162,12 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
 
 
 //! Edit a Review
-//? Review must belong to the current user
+//? Extensively tested on postman
 router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, next) => {
     let currentUser = req.user.id // 2
     let reviewId = req.params.reviewId
 
     const {review, stars} = req.body
-    
-
-    //* Checking if review belongs to the current user
-    let userId = await Review.findByPk(reviewId)
-    let userIdJson = userId.toJSON()
-    if (userIdJson.userId !== currentUser) {
-        res.status(404)
-        return res.json({
-            message: "You are not authorized to edit this review",
-            statusCode: 404
-        })
-    }
 
     //* Checking if a review exists with a specified id
     let updateReview = await Review.findByPk(reviewId)
@@ -166,12 +180,19 @@ router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, n
         })
     }
 
-    updateReview.set({
-        review,
-        stars
-    })
+    
+    //* Checking if review belongs to the current user
+    let userId = await Review.findByPk(reviewId)
+    let userIdJson = userId.toJSON()
+    if (userIdJson.userId !== currentUser) {
+        res.status(404)
+        return res.json({
+            message: "You are not authorized to edit this review",
+            statusCode: 404
+        })
+    }
 
-    if (stars > 5 || stars < 1 || review === '') {
+    if (stars > 5 || stars < 1) {
         res.status(400)
         return res.json({
             message: "Validation error",
@@ -181,6 +202,22 @@ router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, n
             }
         })
     }
+
+    if (!review) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                review: "Review text is required"
+            }
+        })
+    }
+    
+    updateReview.set({
+        review,
+        stars
+    })
 
     //* Updating the review unless it hits validation errors
     try {
@@ -203,7 +240,7 @@ router.put('/:reviewId', requireAuth, handleValidationErrors, async (req, res, n
 
 
 //! Delete a Review
-//? Foreign Key constraint failing 
+//? Extensively Tested on Postman
 router.delete('/:reviewId', requireAuth, async (req, res, next) => {
     let currentUser = req.user.id
     let reviewId = req.params.reviewId
