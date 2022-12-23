@@ -10,8 +10,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 
-// backend/routes/api/users.js
-// ...
+
 const validateSignup = [
     check('email')
       .exists({ checkFalsy: true })
@@ -33,11 +32,14 @@ const validateSignup = [
   ];
 
 
-// Sign up // Functioning in Development
-router.post('/', validateSignup, async (req, res) => {
+//! Sign up 
+//? Tested on Postman Awaiting Testing on Render
+router.post('/', async (req, res) => {
     const { email, password, username, firstName, lastName } = req.body;
 
-    // Error response for duplicate email
+
+    //! Confirmed functioning on Render 
+    //* Error response for duplicate email
     let emailArray = []
       
     emailArray = await User.findAll({
@@ -59,7 +61,8 @@ router.post('/', validateSignup, async (req, res) => {
       }
     }
 
-    // Error Response for duplicate username
+    //! Confirmed Functioning on Render
+    //* Error Response for duplicate username
     let userArray = await User.findAll({
       attributes: ['username']
     })
@@ -76,13 +79,79 @@ router.post('/', validateSignup, async (req, res) => {
         })
       }
     }
+
+    //* Validation Error for first name
+    if (!firstName) {
+      res.status(400)
+      return res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          firstName: "First Name is required",
+        }
+      })
+    }
+
+    //* Validation Error for last name
+    if (!lastName) {
+      res.status(400)
+      return res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          lastName: "Last Name is required",
+        }
+      })
+    }
+
+    //* Validation Error for username
+    if (!username || username.length < 5) {
+      res.status(400)
+      return res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          username: "Username is required",
+          usernamelength: "Please provide a username with at least 4 characters."
+        }
+      })
+    }
+
+    //* Validation Errors for empty fields
+    if (firstName === '' || lastName === '' || username === '') {
+      res.status(400)
+      return res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          email: "Invalid email",
+          username: "Username is required",
+          firstName: "First Name is required",
+          lastName: "Last Name is required"
+        }
+      })
+    }
+
+    //! Test this feature exclusively to see if it is working
+    //* Validation Error for Email
+    if (!email.includes('@') || !email.includes('.com')) {
+      res.status(400)
+      return res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          email: "Invalid email",
+        }
+      })
+    }
      
-    // Checking Either Validation errors or the real sign up
+    //* Checking Either Validation errors or the real sign up
     try {
       const user = await User.signup({ username, email, password, firstName, lastName});
       return res.json({
         user: user.toSafeObject(),
         token: await setTokenCookie(res, user)
+        //? Possibly might need to change token to show up as an empty string
     });
     } catch (error) {
       res.status(400)
