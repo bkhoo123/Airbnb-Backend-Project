@@ -17,7 +17,6 @@ const {Op} = require("sequelize")
 
 //! Get all of the Current User's Bookings
 //? Check if Preview image is false if the code breaks
-//? Test Dates are working
 router.get('/current', requireAuth, async (req, res, next) => {
     let currentUser = req.user.id
 
@@ -31,6 +30,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
             }
         ]
     })
+
     let spotArray = []
     let previewImageArray = []
     let booksList = []
@@ -38,10 +38,11 @@ router.get('/current', requireAuth, async (req, res, next) => {
         booksList.push(book.toJSON())
     })
 
+    //* Checking to see if the current user has any bookings
     if (!bookings) {
-        res.status(404)
+        res.status(404) 
         return res.json({
-            message: "Current user has no Spots",
+            message: "You currently don't have any bookings",
             statusCode: 404
         })
     }
@@ -63,7 +64,9 @@ router.get('/current', requireAuth, async (req, res, next) => {
         previewImageArray.push(preview.toJSON())
         if (previewImageArray[i].preview === true) {
             booksList[i].Spot.previewImage = previewImageArray[i].url
-        } 
+        } else if (previewImageArray[i].preview === false) {
+            booksList[i].Spot.previewImage = 'Currently no preview images exist'
+        }
     }
 
     let newBooksList = []
@@ -82,6 +85,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
         }) 
     })
 
+    
     res.status(200)
     return res.json({
         Bookings: newBooksList
@@ -89,8 +93,155 @@ router.get('/current', requireAuth, async (req, res, next) => {
 })
 
 
+//! Edit a Booking
+//? Booking must belong to the current User
+router.put('/:bookingId', requireAuth, async (req, res, next) => {
+    let bookingId = req.params.bookingId
+    let currentUser = req.user.id
+
+    let book = await Booking.findByPk(bookingId)
+
+    //* Error if it can't be found
+    //! Confirmed working
+    if (!book) {
+        res.status(404)
+        return res.json({
+            message: "Booking couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    let bookJson = book.toJSON()
+    const {startDate, endDate} = req.body
+
+    //* Errors for it must be a booking that belongs to the current user
+    //! Confirmed working
+    if (currentUser !== bookJson.userId) {
+        res.status(403) 
+        return res.json({
+            message: "Only the owner can edit this booking",
+            statusCode: 403
+        })
+    }
+
+    //* Body Validation Errors 
+    //! Confirmed Working
+    if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                endDate: "endDate cannot be on or before startDate"
+            }
+        })
+    }
+
+    //* Past bookings can't be modified
+    //! Confirmed Working
+    //? Double check && functionality
+    if (new Date(startDate).getTime() < new Date().getTime() && new Date(endDate).getTime() < new Date().getTime()) {
+        res.status(403)
+        return res.json({
+            message: "Past bookings can't be modified",
+            statusCode: 403
+        })
+    } 
+
+    //* Booking Conflict
+    //! Confirmed Working
+    let bookings = await Booking.findAll({
+        where: {
+            spotId: bookJson.spotId
+        },
+        attributes: ['startDate', 'endDate']
+    })
+
+    let bookingsList = []
+    bookings.forEach((book) => {
+        bookingsList.push(book.toJSON())
+    })
+    
+    
+    for (let book of bookingsList) {
+        if (new Date(book.startDate).getTime() >= new Date(startDate).getTime() && new Date(book.endDate).getTime() <= new Date(endDate).getTime()) {
+            res.status(403)
+            return res.json({
+                message: "Sorry, this spot is already booked for the specified dates",
+                statusCode: 403,
+                errors: {
+                startDate: "Start date conflicts with an existing booking",
+                endDate: "End date conflicts with an existing booking"
+                }
+            })
+        }
+    }
+    
+    book.set({
+        spotId: bookJson.spotId,
+        userId: Number(currentUser),
+        startDate: startDate,
+        endDate: endDate,
+    })
+
+    await book.save()
+    res.status(200)
+    return res.json(book)
+    
+})
+
+//! Delete a Booking
+router.delete('/:bookingId', requireAuth, async (req, res, next) => {
+    let currentUser = req.user.id
+    let bookingId = req.params.bookingId
+
+    let book = await Booking.findByPk(bookingId)
+
+    //* Error if it can't be found
+    //! Confirmed working
+    if (!book) {
+        res.status(404)
+        return res.json({
+            message: "Booking couldn't be found",
+            statusCode: 404
+        })
+    }
+    let bookJson = book.toJSON()
+
+    //* Errors for it must be a booking that belongs to the current user
+    //! Confirmed working
+    if (currentUser !== bookJson.userId) {
+        res.status(403) 
+        return res.json({
+            message: "Only the owner can delete this booking",
+            statusCode: 403
+        })
+    }
+
+    const {startDate, endDate} = bookJson
 
 
+    //* Error response: Bookings that have been started can't be deleted
+    //! Confirmed functioning
+    if (new Date(startDate).getTime() <= new Date().getTime() && new Date().getTime() <= new Date(endDate).getTime()) {
+        res.status(403)
+        return res.json({
+            message: "Bookings that have been started can't be deleted",
+            statusCode: 403
+        })
+    }
+
+    //* Delete book if none of the errors above get hit 
+    //! Confirmed functioning
+    if (book) {
+        res.status(200)
+        await book.destroy()
+        return res.json({
+            message: "Successfully deleted",
+            statusCode: 200
+        })
+    }
+})
 
 
 

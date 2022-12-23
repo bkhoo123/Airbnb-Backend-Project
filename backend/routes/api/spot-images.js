@@ -2,7 +2,7 @@ const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 
-const {User, Spot, SpotImage, Review, ReviewImage, sequelize} = require('../../db/models')
+const {User, Spot, SpotImage, Review, ReviewImage, sequelize, Booking} = require('../../db/models')
 
 const router = express.Router();
 
@@ -15,47 +15,45 @@ const { requireAuth } = require('../../utils/auth')
 const {Op} = require("sequelize")
 
 
-//! Delete a Review Image
-//? Only the owner of the review is authorized to delete
+//! Delete a Spot Image
 router.delete('/:imageId', requireAuth, async (req, res, next) => {
-    let imageId = req.params.imageId
     let currentUser = req.user.id
+    let imageId = req.params.imageId
 
-    let reviewImage = await ReviewImage.findByPk(imageId)
+    let spotImage = await SpotImage.findByPk(imageId)
 
-    //* Error checking if review image doesn't exist 
     //! Confirmed working
-    if (!reviewImage) {
+    //* Spot Image can't be found error
+    if (!spotImage) {
         res.status(404)
         return res.json({
-            message: "Review Image couldn't be found",
+            message: "Spot Image couldn't be found",
             statusCode: 404
         })
     }
 
-    //* Review Image can only be deleted by owner 
+    let spotImageJson = spotImage.toJSON()
+    let spotId = spotImageJson.spotId
+    
+    let spot = await Spot.findByPk(spotId)
+    let spotJson = spot.toJSON()
+    let userId = spotJson.ownerId
+
+    //* Spot Image can only be deleted by owner
     //! Confirmed working
-    let reviewImageJson = reviewImage.toJSON()
-    let reviewId = reviewImageJson.reviewId
-
-    let review = await Review.findByPk(reviewId)
-    let reviewJson = review.toJSON()
-    let userId = reviewJson.userId
-
-
     if (currentUser !== userId) {
         res.status(403)
         return res.json({
-            message: "You can only delete this review if you are the owner of the review",
+            message: "You can only delete this image if you are the owner of the spot",
             statusCode: 403
         })
     }
 
-    //* If above errors don't hit delete the Review Image
+    //* If above errors don't hit delete the spot Image
     //! Confirmed working
-    if (reviewImage) {
-        res.status(200)
-        await reviewImage.destroy()
+    if (spotImage) {
+        res.status(200) 
+        await spotImage.destroy()
         return res.json({
             message: "Successfully deleted",
             statusCode: 200

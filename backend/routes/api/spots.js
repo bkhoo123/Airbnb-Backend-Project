@@ -14,13 +14,50 @@ const { requireAuth } = require('../../utils/auth')
 
 const {Op} = require("sequelize")
 
-// attributes: [
-//     [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
-// ]
 
 //! Get All Spots
-//? Avg Rating Needs fine tuning 
+//? Extensively Tested on Postman
 router.get('/', async (req, res, next) => {
+
+    let { page, size } = req.query
+    if(!page) page = 1
+    if (!size) size = 3
+
+    //* Page Validation
+    if (page < 1) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                page: "Page must be greater than or equal to 1"
+            }
+        })
+    } 
+
+    //* Size Validation
+    if (size < 1) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                size: "Size must be greater than or equal to 1"
+            }
+        })
+    }
+
+
+    page = +page
+    size = parseInt(size)
+
+    const pagination = {}
+
+    if (page >= 1 && size >= 1) {
+        pagination.limit = size; 
+        pagination.offset = size * (page - 1)
+    }
+
     let spots = await Spot.findAll({
         include: [
             {
@@ -29,15 +66,16 @@ router.get('/', async (req, res, next) => {
             {
                 model: SpotImage
             }
-        ]
+        ],
+        ...pagination
     })
 
     let spotsList = []
     spots.forEach((spot) => {
         spotsList.push(spot.toJSON())
     }) 
-    
-    spotsList.forEach(spot => {
+
+    for (let spot of spotsList) {
         spot.Reviews.forEach(review => {
             spot.avgRating = review.stars
         })
@@ -45,8 +83,31 @@ router.get('/', async (req, res, next) => {
             spot.avgRating = 'No reviews have been posted for this location'
         }
 
+        const avgRating = await Review.findAll({
+            where: {
+                spotId: spot.id
+            },
+            attributes: {
+                include: [
+                    [
+                        sequelize.fn("AVG", sequelize.col("stars")), "avgRating"
+                    ]
+                ]
+            }
+        })
+        let avgList = []
+        avgRating.forEach(avg => {
+            avgList.push(avg.toJSON())
+        })
+        
+        for (let avg of avgList) {
+            spot.avgRating = avg.avgRating
+        }
+        
         delete spot.Reviews
-
+    }
+    
+    spotsList.forEach(spot => {
         spot.SpotImages.forEach(image => {
             if (image.preview === true) {
                 spot.previewImage = image.url
@@ -60,7 +121,9 @@ router.get('/', async (req, res, next) => {
 
     res.status(200)
     return res.json({
-        Spots: spotsList
+        Spots: spotsList,
+        page: page,
+        size: size
     })
     
 })
@@ -593,7 +656,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
     let ownerId = spotUserJson.ownerId
 
     if (ownerId !== userId) {
-        res.status(404)
+        res.status(403)
         return res.json({
             message: "Only the owner is authorized to delete the spot"
         })
@@ -621,8 +684,8 @@ router.get('/:spotId/reviews', async (req, res, next) => {
             statusCode: 404
         })
     }
-
-    let spotReview = await Review.findOne({
+    //? Bug not showing all reviews
+    let spotReview = await Review.findAll({
         where: {
             spotId: spotId
         },
@@ -636,32 +699,50 @@ router.get('/:spotId/reviews', async (req, res, next) => {
         ]
     })
 
-    let reviewSpot = spotReview.toJSON()
-    delete reviewSpot.User.username
-    
-    let reviewId = reviewSpot.id
-
-    let reviewCount = await ReviewImage.findAll({
-        where: {
-            reviewId: reviewId
-        }
-    })
-    let reviewList = []
-    reviewCount.forEach((review) => {
-        reviewList.push(review.toJSON())
-    })
-    
-
-    for (let i = 0; i < reviewList.length; i ++) {
-        delete reviewSpot.ReviewImages[i].reviewId
-        delete reviewSpot.ReviewImages[i].createdAt
-        delete reviewSpot.ReviewImages[i].updatedAt
+    if (!spotReview) {
+        res.status(404) 
+        return res.json({
+            message: "No reviews for this spot currently",
+            statusCode: 404
+        })
     }
 
-    res.status(200)
-    return res.json({
-        Reviews: [reviewSpot]
+    let reviewsList = []
+    spotReview.forEach((review) => {
+        reviewsList.push(review.toJSON())
     })
+    
+    for (let review of reviewsList) {
+        delete review.User.username
+        
+        let reviewId = review.id
+
+        let reviewCount = await ReviewImage.findAll({
+            where: {
+                reviewId: reviewId
+            }
+        })
+        let reviewList = []
+        reviewCount.forEach((review) => {
+            reviewList.push(review.toJSON())
+        })
+
+        for (let i = 0; i < reviewList.length; i ++) {
+            delete review.ReviewImages[i].reviewId
+            delete review.ReviewImages[i].createdAt
+            delete review.ReviewImages[i].updatedAt
+        }
+    }
+    
+    if (reviewsList) {
+        res.status(200)
+        return res.json({
+            Reviews: reviewsList
+        })
+    }
+    // return res.json({
+    //     Reviews: reviewsList
+    // })
 })
 
 //! Create a Review for a Spot based on the Spot's Id
@@ -670,14 +751,28 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
     let currentUser = req.user.id
     
-
     const {review, stars} = req.body
-
-    let spotInfo = await Spot.findByPk(spotId)
-    let spotInfoJson = spotInfo.toJSON()
-    let userId = spotInfoJson.ownerId
     
 
+    let spotInfo = await Spot.findByPk(spotId, {
+        include: [
+            {
+                model: Review
+            }
+        ]
+    })
+
+    //* If Spot can't be found error
+    if (!spotInfo) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    
+    //* Text required for Reviews Error
     if (!review) {
         res.status(400)
         return res.json({
@@ -689,7 +784,8 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
         })
     }
 
-    if (stars < 0 || stars > 5) {
+    //* Ratings must be between 1 to 5
+    if (stars < 1 || stars > 5) {
         res.status(400)
         return res.json({
             message: "Validation error",
@@ -699,57 +795,232 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
             }
         })
     }
-    
-    
-    //! Create a error response 403 when a review already exists for the spot from the current user
 
-    try {
-        spotReview = await Review.create({
-            userId: currentUser,
-            spotId: Number(spotId),
-            review: review,
-            stars: stars,
-            
-        }, {
-            include: [Spot]
-        })
-        res.status(201)
-        return res.json(spotReview)
-    } catch (error) {
-        res.status(400)
-        return res.json({
-            message: "Validation error",
-            statusCode: 400,
-            errors: {
-                review: "Review text is required",
-                stars: "Stars must be an integer from 1 to 5"
-            }
-        })
+    // let spotInfoJson = spotInfo.toJSON()
+    // let userId = spotInfoJson.ownerId
+    //* Review from the current user already exists for the spot Error
+    //! Functioning just need extra testing on Render
+    let reviewInfo = await Review.findAll({
+        where: {
+            spotId: spotId
+        },
+        attributes: ['spotId', 'userId']
+    })
+
+    let reviewsList = []
+    reviewInfo.forEach((review) => {
+        reviewsList.push(review.toJSON())
+    })
+
+    for (reviews of reviewsList) {
+        if (reviews.spotId == Number(spotId) && reviews.userId == Number(currentUser)) {
+            res.status(403)
+            return res.json({
+                message: "User already has a review for this spot",
+                statusCode: 403
+            })
+        }
     }
+
+    spotReview = await Review.create({
+        userId: Number(currentUser),
+        spotId: Number(spotId),
+        review: review,
+        stars: stars,
+        
+    }, {
+        include: Spot
+    })
+    res.status(201)
+    return res.json(spotReview)
+
+
+    // try {
+        
+    // } catch (error) {
+    //     res.status(400)
+    //     return res.json({
+    //         message: "Validation error",
+    //         statusCode: 400,
+    //         errors: {
+    //             review: "Review text is required",
+    //             stars: "Stars must be an integer from 1 to 5"
+    //         }
+    //     })
+    // }
     
 })
 
 //! Get All Bookings for a Spot based on the Spot's id
+//? Extensively Tested on Postman
 router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
     let spotId = req.params.spotId
     let currentUser = req.user.id
+    let spotUser = await Spot.findByPk(spotId)
     
 
     let bookings = await Booking.findAll({
+        include: [
+            {
+                model: User
+            }
+        ],
         where: {
             spotId: spotId
-        }
+        },
     })
 
-    let spotUser = await Spot.findByPk(spotId)
+    if (!spotUser) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            statusCode: 404
+        })
+    }
     let spotUserJson = spotUser.toJSON()
 
-    // if (currentUser === spotUserJson.ownerId) {
+    let bookList = []
+    bookings.forEach((book) => {
+        bookList.push(book.toJSON())
+    })
+
+    let ownerbookings = []
+    
+    //! This part is working
+    if (currentUser !== spotUserJson.ownerId) {
+        bookList.forEach((book) => {
+            delete book.User
+            delete book.id
+            delete book.userId
+            delete book.createdAt
+            delete book.updatedAt
+        })  
+        res.status(200)
+        return res.json({
+            Bookings: bookList
+      }) //! Confirmed working
+    } else if (currentUser === spotUserJson.ownerId) {
+        res.status(200)
+        bookList.forEach((book) => {
+            const {User, id, userId, startDate, endDate, createdAt, updatedAt} = book
+            ownerbookings.push({
+                User: User,
+                id: id,
+                spotId: Number(spotId),
+                userId: userId,
+                startDate: startDate,
+                endDate: endDate,
+                createdAt: createdAt,
+                updatedAt: updatedAt
+            })
+            
+        })
+        res.status(200)
+            return res.json({
+                Bookings: ownerbookings
+        })
+    }
+})
+
+//! Create a Booking from a Spot based on the Spot's Id
+//? Extensively tested on postman
+router.post('/:spotId/bookings', requireAuth, async (req, res, next) => {
+    let spotId = req.params.spotId
+    let currentUser = req.user.id
+
+    let spot = await Spot.findByPk(spotId, {
+        include: [
+            {
+                model: Booking
+            }
+        ]
+    })
+
+    //* Spot can't be found error
+    if (!spot) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            statusCode: 404
+        })
+    }
+    let spotUser = spot.toJSON()
+    let spotOwnerId = spotUser.ownerId
+
+
+    //* Spot must not belong to current user
+    if (spotOwnerId === currentUser) {
+        res.status(403)
+        return res.json({
+            message: "You cannot book your own place"
+        })
+    }
+
+    const {startDate, endDate} = req.body
+
+    //* Validation Comparisons
+    if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+        res.status(400)
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+                endDate: "endDate cannot be on or before startDate"
+            }
+        })
+    }
+
+    //* Booking conflicts
+    //? Extensively tested on Postman
+    
+    let bookings = await Booking.findAll({
+        where: {
+            spotId: spotId
+        },
+        attributes: ['startDate', 'endDate']
+    })
+
+    let bookingsList = []
+    bookings.forEach((book) => {
+        bookingsList.push(book.toJSON())
+    })
+    
+    
+    for (let book of bookingsList) {
+        if (new Date(book.startDate).getTime() >= new Date(startDate).getTime() && new Date(book.endDate).getTime() <= new Date(endDate).getTime()) {
+            res.status(400)
+            return res.json({
+                message: "Validation Error",
+                statusCode: 400,
+                errors: {
+                startDate: "Start date conflicts with an existing booking",
+                endDate: "End date conflicts with an existing booking"
+                }
+            })
+        }
+    }
+
+    try {
+        let newBooking = await Booking.create({
+            spotId: Number(spotId),
+            userId: currentUser,
+            startDate: startDate,
+            endDate: endDate,
+        })
         
-    // }
-
-    return res.json(bookings)
-
+        res.status(200)
+        return res.json(newBooking)
+    } catch (error) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                startDate: "Start date conflicts with an existing booking",
+                endDate: "End date conflicts with an existing booking"
+            }
+        })
+    }
 })
 
 
