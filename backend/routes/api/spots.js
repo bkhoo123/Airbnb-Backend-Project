@@ -21,7 +21,7 @@ router.get('/', async (req, res, next) => {
 
     let { page, size } = req.query
     if(!page) page = 1
-    if (!size) size = 3
+    if (!size) size = 20
 
     //* Page Validation
     if (page < 1) {
@@ -76,13 +76,6 @@ router.get('/', async (req, res, next) => {
     }) 
 
     for (let spot of spotsList) {
-        spot.Reviews.forEach(review => {
-            spot.avgRating = review.stars
-        })
-        if (!spot.avgRating) {
-            spot.avgRating = 'No reviews have been posted for this location'
-        }
-
         const avgRating = await Review.findAll({
             where: {
                 spotId: spot.id
@@ -102,6 +95,10 @@ router.get('/', async (req, res, next) => {
         
         for (let avg of avgList) {
             spot.avgRating = avg.avgRating
+            if (!spot.avgRating) {
+                spot.avgRating = 'No reviews have been posted for this location'
+            }
+    
         }
         
         delete spot.Reviews
