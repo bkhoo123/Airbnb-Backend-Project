@@ -77,6 +77,7 @@ router.get('/', async (req, res, next) => {
 
     for (let spot of spotsList) {
         const avgRating = await Review.findAll({
+            group: 'id',
             where: {
                 spotId: spot.id
             },
@@ -115,6 +116,9 @@ router.get('/', async (req, res, next) => {
         })
         delete spot.SpotImages
     })
+
+    
+
 
     res.status(200)
     return res.json({
