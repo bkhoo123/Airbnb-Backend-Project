@@ -107,7 +107,7 @@ router.get('/', async (req, res, next) => {
             if (image.preview === true) {
                 spot.previewImage = image.url
             }
-            if (!image.preview) {
+            if (!image.preview || image.preview === false) {
                 spot.previewImage = 'no image available'
             }
         })
