@@ -803,8 +803,6 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
         })
     }
 
-    // let spotInfoJson = spotInfo.toJSON()
-    // let userId = spotInfoJson.ownerId
     //* Review from the current user already exists for the spot Error
     //! Functioning just need extra testing on Render
     let reviewInfo = await Review.findAll({
@@ -840,21 +838,6 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     })
     res.status(201)
     return res.json(spotReview)
-
-
-    // try {
-        
-    // } catch (error) {
-    //     res.status(400)
-    //     return res.json({
-    //         message: "Validation error",
-    //         statusCode: 400,
-    //         errors: {
-    //             review: "Review text is required",
-    //             stars: "Stars must be an integer from 1 to 5"
-    //         }
-    //     })
-    // }
     
 })
 
