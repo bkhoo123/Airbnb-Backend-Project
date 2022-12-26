@@ -218,12 +218,16 @@ router.get('/:spotId', async (req, res, next) => {
     let spotDetails = await Spot.findByPk(spotId, {
         include: [
             {
-                model: Review
+                model: Review,
             },
             {
                 model: SpotImage
+            },
+            {
+                model: User,
+                as: 'Owner'
             }
-        ]
+        ],
     })
 
     if (!spotDetails) {
@@ -233,6 +237,9 @@ router.get('/:spotId', async (req, res, next) => {
             statusCode: 404
         })
     }
+    
+    
+
 
     let avgRating = await Review.findOne({
         where: {
@@ -240,29 +247,65 @@ router.get('/:spotId', async (req, res, next) => {
         },
         attributes: [
             [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
+            
         ]
     })
     let avg = avgRating.toJSON()
 
+
     let spots = spotDetails.toJSON()
-    spots.avgRating = avg.avgRating
+    spots.avgStarRating = avg.avgRating
     if (!avg.avgRating) {
-        spots.avgRating = 'No reviews have been made for this location'
+        spots.avgStarRating = 'No reviews have been made for this location'
     }
 
-    spots.SpotImages.forEach(image => {
-        if (image.preview === true) {
-            spots.previewImage = image.url
-        }
-        if (!image.preview || image.preview === false) {
-            spots.previewImage = 'no image available'
-        }
+
+    let numReviews = await Review.findOne({
+        where: {
+            spotId: spotId
+        },
+        attributes: [
+            [sequelize.fn('COUNT', sequelize.col('id')), 'numReviews']
+        ]
     })
-    delete spots.SpotImages
+
+    let numReviewJson = numReviews.toJSON()
+
+    spots.numReviewss = numReviewJson.numReviews
+    
+
+    
+    for (let i = 0; i < spots.SpotImages.length; i ++) {
+        delete spots.SpotImages[i].spotId
+        delete spots.SpotImages[i].createdAt
+        delete spots.SpotImages[i].updatedAt
+    }
+
+    const {id, ownerId, address, city, state, country, lng, lat, name, description, price, createdAt, updatedAt, avgStarRating, numReviewss} = spots
+    
     delete spots.Reviews
+    delete spots.Owner.username
     
     res.status(200)
-    return res.json(spots)
+    return res.json({
+        id: id,
+        ownerId: ownerId,
+        address: address,
+        city: city, 
+        state: state,
+        country: country,
+        lng: lng,
+        lat: lat,
+        name: name,
+        description: description,
+        price: price,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        numReviews: numReviewss,
+        avgStarRating,
+        SpotImages: spots.spotImages,
+        Owner: spots.Owner
+    })
 })
 
 
@@ -978,10 +1021,10 @@ router.post('/:spotId/bookings', requireAuth, async (req, res, next) => {
     
     for (let book of bookingsList) {
         if (new Date(book.startDate).getTime() >= new Date(startDate).getTime() && new Date(book.endDate).getTime() <= new Date(endDate).getTime()) {
-            res.status(400)
+            res.status(403)
             return res.json({
                 message: "Validation Error",
-                statusCode: 400,
+                statusCode: 403,
                 errors: {
                 startDate: "Start date conflicts with an existing booking",
                 endDate: "End date conflicts with an existing booking"
