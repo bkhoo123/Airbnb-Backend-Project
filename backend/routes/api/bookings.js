@@ -231,6 +231,8 @@ router.delete('/:bookingId', requireAuth, async (req, res, next) => {
         })
     }
 
+    //* Past bookings can't be deleted
+
     //* Delete book if none of the errors above get hit 
     //! Confirmed functioning
     if (book) {

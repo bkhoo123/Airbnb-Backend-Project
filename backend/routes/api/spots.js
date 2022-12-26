@@ -17,6 +17,9 @@ const {Op} = require("sequelize")
 
 //! Get All Spots
 //? Extensively Tested on Postman
+//* Seed data exists in the database for spots to be returned
+//* Successful response includes each spot in the database
+//* Spot data returned includes the id, ownerId, address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt, previewImage, and avgRating
 router.get('/', async (req, res, next) => {
 
     let { page, size } = req.query
@@ -107,7 +110,7 @@ router.get('/', async (req, res, next) => {
             if (image.preview === true) {
                 spot.previewImage = image.url
             }
-            if (!image.preview || image.preview === false) {
+            if (!image.preview) {
                 spot.previewImage = 'no image available'
             }
         })
@@ -126,9 +129,12 @@ router.get('/', async (req, res, next) => {
 
 //! Get All Spots Owned by the Current User
 //? Extensive Testing Completed on Postman awaiting Render Check
+//* An authenticated user is required for a successful response
+//* Successful response includes only spots created by the current user
+//* Spot data returned includes the id, ownerId, address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt, previewImage, and avgRating
 router.get('/current', requireAuth, async(req, res, next) => {
     let currentUser = req.user.id
-    let spot = await Spot.findOne({
+    let spots = await Spot.findAll({
         where: {
             ownerId: currentUser
         },
@@ -142,19 +148,41 @@ router.get('/current', requireAuth, async(req, res, next) => {
         ]
     })
 
-    let avgRating = await Review.findOne({
-        where: {
-            userId: currentUser
-        },
-        attributes: [
-            [sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']
-        ]
+    let spotsList = []
+    spots.forEach((spot) => {
+        spotsList.push(spot.toJSON())
     })
-    let avg = avgRating.toJSON()
     
 
+    for (let spot of spotsList) {
+        const avgRating = await Review.findAll({
+            where: {
+                spotId: spot.id
+            },
+            attributes: [
+                [
+                    sequelize.fn("AVG", sequelize.col("stars")), "avgRating"
+                ]
+            ]
+        })
+
+        let avgList = []
+        avgRating.forEach(avg => {
+            avgList.push(avg.toJSON())
+        })
+
+        for (let avg of avgList) {
+            spot.avgRating = avg.avgRating
+            if (!spot.avgRating) {
+                spot.avgRating = 'No reviews have been posted for this location'
+            }
+        }
+
+        delete spot.Reviews
+    } 
+
     //* Handles if current user doesn't own any spots
-    if (!spot) {
+    if (!spots) {
         res.status(404)
         return res.json({
             message: "Spot couldn't be found",
@@ -162,29 +190,22 @@ router.get('/current', requireAuth, async(req, res, next) => {
             statusCode: 404
         })
     }
-    
 
-    let spots = spot.toJSON()
-    spots.avgRating = avg.avgRating
-    if (!avg.avgRating) {
-        spots.avgRating = 'No reviews have been made for this location'
-    }
-
-    spots.SpotImages.forEach(image => {
-        if (image.preview === true) {
-            spots.previewImage = image.url
-        }
-        if (!image.preview || image.preview === false) {
-            spots.previewImage = 'no image available'
-        }
+    spotsList.forEach(spot => {
+        spot.SpotImages.forEach(image => {
+            if (!image.preview) {
+                spot.previewImage = 'no image available'
+            }
+            if (image.preview === true) {
+                spot.previewImage = image.url
+            } 
+        })
+        delete spot.SpotImages
     })
-    delete spots.SpotImages
-    delete spots.Reviews
 
-   
     res.status(200)
     return res.json({
-        Spots: spots
+        Spots: spotsList
     })
 })
 
@@ -426,27 +447,20 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
 
     const {url, preview} = req.body
 
-    try {
-        spotImage = await SpotImage.create({
-            spotId: spotId,
-            url,
-            preview
-        }, {
-            include: [Spot]
-        })
-        res.status(200)
-        return res.json({
-            spotId,
-            url,
-            preview
-        })
-    } catch (error) {
-        res.status(404)
-        return res.json({
-            message: "Spot couldn't be found",
-            statusCode: 404
-        })
-    }
+    
+    let spotImage = await SpotImage.create({
+        spotId: spotId,
+        url,
+        preview
+    })
+    let spotImageJson = spotImage.toJSON()
+    delete spotImageJson.spotId
+    delete spotImageJson.updatedAt
+    delete spotImageJson.createdAt
+
+    res.status(200)
+    return res.json(spotImageJson)
+
 })
 
 
@@ -659,6 +673,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
     if (deleteSpot) {
         res.status(200)
+        await deleteSpot.destroy()
         return res.json({
             message: "Successfully deleted",
             statusCode: 200
@@ -735,9 +750,6 @@ router.get('/:spotId/reviews', async (req, res, next) => {
             Reviews: reviewsList
         })
     }
-    // return res.json({
-    //     Reviews: reviewsList
-    // })
 })
 
 //! Create a Review for a Spot based on the Spot's Id

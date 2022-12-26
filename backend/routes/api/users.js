@@ -33,7 +33,11 @@ const validateSignup = [
 
 
 //! Sign up 
-//? Tested on Postman Awaiting Testing on Render
+//? Passed Alec's Pretest
+//* New user exists in the database after request
+//* Successful response includes newly created id, firstName, lastName, email, and token
+//* Error response with status 403 is given when the specified email already exists 
+//* Error response with status 400 is given when body validations for the email, firstName, or lastName are violated 
 router.post('/', async (req, res) => {
     const { email, password, username, firstName, lastName } = req.body;
 
