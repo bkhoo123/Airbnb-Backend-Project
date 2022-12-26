@@ -12,6 +12,18 @@ const { restoreUser } = require("../../utils/auth.js");
 // Connect restoreUser middleware to the API router
   // If current user session is valid, set req.user to the user in the database
   // If current user session is not valid, set req.user to null
+
+
+// Add a XSRF-TOKEN cookie
+router.get("/csrf/restore", (req, res) => {
+  const csrfToken = req.csrfToken();
+  res.cookie("XSRF-TOKEN", csrfToken);
+  res.status(200).json({
+    message: "Successfully got token",
+    'XSRF-Token': csrfToken
+  });
+});
+
 router.use(restoreUser);
 
 router.use('/session', sessionRouter);

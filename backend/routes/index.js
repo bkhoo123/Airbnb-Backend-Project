@@ -15,15 +15,7 @@ router.get('/hello/world', function(req, res) {
 });
 
 
-// Add a XSRF-TOKEN cookie
-router.get("/csrf/restore", (req, res) => {
-    const csrfToken = req.csrfToken();
-    res.cookie("XSRF-TOKEN", csrfToken);
-    res.status(200).json({
-      message: "Successfully got token",
-      'XSRF-Token': csrfToken
-    });
-});
+
 
 
 module.exports = router;
