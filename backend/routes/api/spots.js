@@ -238,9 +238,6 @@ router.get('/:spotId', async (req, res, next) => {
         })
     }
     
-    
-
-
     let avgRating = await Review.findOne({
         where: {
             spotId: spotId
@@ -303,7 +300,7 @@ router.get('/:spotId', async (req, res, next) => {
         updatedAt: updatedAt,
         numReviews: numReviewss,
         avgStarRating,
-        SpotImages: spots.spotImages,
+        SpotImages: spots.SpotImages,
         Owner: spots.Owner
     })
 })
