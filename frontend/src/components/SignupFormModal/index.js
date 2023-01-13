@@ -1,13 +1,10 @@
-import React, {useState} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import { Redirect } from 'react-router-dom'
-import * as sessionActions from "../../store/session"
-import { signupUser } from '../../store/session'
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useModal } from "../../context/Modal";
+import * as sessionActions from "../../store/session";
 
-
-export default function SignupFormPage() {
+export default function SignupFormModal() {
   const dispatch = useDispatch()
-  const sessionUser = useSelector((state) => state.session.user)
 
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
@@ -16,8 +13,9 @@ export default function SignupFormPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [errors, setErrors] = useState([])
+  const { closeModal } = useModal();
   
-  if (sessionUser) return <Redirect to="/"/>
+  
 
   const handleSubmit = (e) => {
     e.preventDefault()

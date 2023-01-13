@@ -1,38 +1,71 @@
+// import React from 'react';
+// import { NavLink } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
+// import ProfileButton from './ProfileButton';
+// import OpenModalButton from '../OpenModalButton';
+// import LoginFormModal from '../LoginFormModal';
+// import SignupFormModal from '../SignupFormModal';
+
+// export default function Navigation({isLoaded}) {
+//   const sessionUser = useSelector(state => state.session.user)
+  
+//   let sessionLinks;
+
+//   if (sessionUser) {
+//     sessionLinks = (
+//         <span className="session-nav">
+//             <ProfileButton user={sessionUser}/>
+//         </span>
+//     )
+//   } else {
+//     sessionLinks = (
+//         <span className="login-signup">
+//         <OpenModalButton 
+//         className="log-signbuttons"
+//         buttonText="Log In" 
+//         modalComponent={<LoginFormModal />}
+//         />
+//         <OpenModalButton
+//           className="log-signbuttons"
+//           buttonText="Sign Up"
+//           modalComponent={<SignupFormModal />}
+//         />
+//         </span>
+//     )
+//   }
+
+//   return (
+//     <div className="nav-bar">
+//       <span className="home-nav">
+//       <NavLink exact to="/">Home</NavLink>
+//       </span>
+//       {isLoaded && sessionLinks}
+//     </div>
+//   );
+// }
+
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
-import * as sessionActions from '../../store/session';
-
-export default function Navigation({isLoaded}) {
-  
-  const sessionUser = useSelector(state => state.session.user)
-  const dispatch = useDispatch()
 
 
-  let sessionLinks;
-
-  if (sessionUser) {
-    sessionLinks = (
-        <span className="session-nav">
-            <ProfileButton user={sessionUser}/>
-        </span>
-    )
-  } else {
-    sessionLinks = (
-        <span className="login-signup">
-            <NavLink to="/login">Login</NavLink>
-            <NavLink to="/signup">Sign Up</NavLink>
-        </span>
-    )
-  }
+function Navigation({ isLoaded }){
+  const sessionUser = useSelector(state => state.session.user);
 
   return (
     <div className="nav-bar">
-      <span className="home-nav">
-      <NavLink exact to="/">Home</NavLink>
+      <span>
+        <NavLink exact to="/">Home</NavLink>
       </span>
-      {isLoaded && sessionLinks}
+      {isLoaded && (
+        <span>
+          <ProfileButton user={sessionUser} />
+        </span>
+      )}
     </div>
   );
 }
+
+export default Navigation;
