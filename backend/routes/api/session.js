@@ -24,9 +24,6 @@ const { Op } = require("sequelize")
 
 
 //! Log in
-//* Successful response includes the user's id, firstName, lastName, email, and token
-//* Error response with status 401 is given when invalid credentials are given 
-//* Error response with status 400 is given when body validations for the email, firstName, or lastName are violated
 router.post('/', async (req, res, next) => {
       const { credential, password } = req.body;
 
