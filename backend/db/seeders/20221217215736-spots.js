@@ -99,16 +99,16 @@ module.exports = {
         price: 150.55
       },
       {
-        ownerId: 8,
+        ownerId: 7,
         address: '999 Gaudi Style',
         city: 'La Paz',
         state: 'Baja California',
         country: 'Mexico',
         lat: 180,
         lng: -21,
-        name: 'Peja',
+        name: 'Breaknam',
         description: 'Come live your dreams next to the great oceans of Mexico',
-        price: 172
+        price: 127
       }
     ], {})
   },
