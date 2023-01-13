@@ -1,15 +1,17 @@
 body {
-    font-family: 'Montserrat'
-
+    font-family: 'Montserrat';
+    
 }
 
-.form {
+/*!! Login */
+
+.login-form {
     display: flex;
     justify-content: center; 
     flex-direction: column;
     align-items: center;
     align-content: center;
-    gap: 15px;
+    gap: 10px;
     height: 100vh;
     width: 100vw;
     background: linear-gradient(to right, #FFECD2, #FCB69F)
@@ -17,4 +19,58 @@ body {
 
 .login-input {
     margin-left: 5px;
+}
+
+
+/*!! Signup */
+
+.signup-form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    gap: 10px; 
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to right, #A9F1DF, #FFBBBB);
+    margin: 0;
+}
+
+.signup-input {
+    display: flex;
+    margin-top: 5px;
+}
+
+
+
+/*!! Navigation Bar */
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.home-nav {
+    display: flex;
+    justify-content: start;
+}
+
+.login-signup {
+    display: flex;
+    justify-content: end;
+}
+
+.session-nav {
+    display: flex;
+    justify-content: end;
+}
+
+.fa-user-circle {
+    
+}
+
+/*!! Profile Button */
+
+.hidden {
+    display: none;
 }

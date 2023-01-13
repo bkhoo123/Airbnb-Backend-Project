@@ -26,7 +26,7 @@ export default function LoginFormPage() {
     }
 
     return (
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
       <ul>
         {errors.map((error, idx) => <li key={idx}>{error}</li>)}
       </ul>
