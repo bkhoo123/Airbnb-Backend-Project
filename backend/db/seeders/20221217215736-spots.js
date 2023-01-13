@@ -16,51 +16,99 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       { 
         ownerId: 1,
-        address: '27 Weston Dr',
-        city: 'Daly City',
+        address: '27 Joshua Tree',
+        city: 'Joshua Tree',
         state: 'California',
         country: 'United States',
         lat: 37.70,
         lng: -122.49,
-        name: 'Brian',
-        description: 'nice home near beach',
-        price: 275.50
+        name: 'Josh',
+        description: 'Welcome to the greatest place to start achieving your rock climbing Dreams',
+        price: 1250
       },
       {
         ownerId: 2,
-        address: '307 El Dorado Dr',
-        city: 'Daly City',
-        state: 'California',
+        address: '307 Dome Haven St',
+        city: 'Bend',
+        state: 'Oregon',
         country: 'United States',
         lat: 55.2,
         lng: -101.3,
         name: 'Richard',
-        description: "nice house",
-        price: 302.1
+        description: "Literally live the dome nature experience you have always wanted",
+        price: 750.50
       },
       {
         ownerId: 3,
-        address: 'Disney land',
-        city: 'Anaheim',
-        state: 'California',
+        address: '777 WildWest Retreat',
+        city: 'Kalispell',
+        state: 'Montana',
         country: 'United States',
         lat: 98.3,
         lng: 102,
-        name: 'Walt Disney',
-        description: 'Where dreams come true',
+        name: 'True Cowboy',
+        description: 'Live out your Wild West Dreams and come out to the silo retreat',
         price: 1002.50
       },
       {
         ownerId: 4,
-        address: 'Gods place',
-        city: 'Heaven',
-        state: 'Cloud area',
-        country: 'Domain of the world',
+        address: '123 Windowed Nature',
+        city: 'Three Rivers',
+        state: 'California',
+        country: 'United States',
         lat: 150,
         lng: 150,
-        name: 'Holy Trinity',
-        description: 'Where you go in the afterlife',
-        price: 783.12
+        name: 'Mother Nature',
+        description: 'Literally blend right in with nature and live out your dreams to be one. Perfect for meditating and doing yoga.',
+        price: 1750
+      },
+      {
+        ownerId: 5,
+        address: '999 Guitar Way',
+        city: "Sindun-Myeon",
+        state: 'Incheon-Si',
+        country: 'South Korea',
+        lat: 100,
+        lng: 100,
+        name: "BTS",
+        description: "If you ever wondered what brought about BTS's music inspiration why not live in the very guitar house they lived in.",
+        price: 2500
+      },
+      {
+        ownerId: 6,
+        address: '170 Harsh Thundra',
+        city: 'Forde',
+        state: 'Vestland Fylke',
+        country: 'Norway',
+        lat: 122,
+        lng: 75,
+        name: 'BigFoot',
+        description: "Come to the Icy Thundra and get a chance to possibly see Big Foot. Guaranteed to be -30F' or colder or your money back",
+        price: 123
+      },
+      {
+        ownerId: 7,
+        address: '123 HedgeMaze',
+        city: 'Tambon Khao Hin Son',
+        state: 'Chang Wat',
+        country: 'Thailand',
+        lat: 122,
+        lng: -75,
+        name: 'TrueMazeWay',
+        description: "Have you ever wanted to live in the rural country side and also go through a maze. This is your chance",
+        price: 150.55
+      },
+      {
+        ownerId: 8,
+        address: '999 Gaudi Style',
+        city: 'La Paz',
+        state: 'Baja California',
+        country: 'Mexico',
+        lat: 180,
+        lng: -21,
+        name: 'Peja',
+        description: 'Come live your dreams next to the great oceans of Mexico',
+        price: 172
       }
     ], {})
   },
@@ -75,7 +123,7 @@ module.exports = {
     options.tableName = 'Spots'
     const Op = Sequelize.Op
     await queryInterface.bulkDelete(options, {
-      address: { [Op.in]: ['27 Weston Dr', '307 El Dorado Dr', 'Disney land', 'Gods place']}
+      address: { [Op.in]: ['27 Joshua Tree', '307 Dome Haven St', '777 WildWest Retreat', '123 Windowed Nature', '999 Guitar Way', '170 Harsh Thundra', '123 HedgeMaze', '999 Gaudi Style']}
     }, {})
   }
 };
