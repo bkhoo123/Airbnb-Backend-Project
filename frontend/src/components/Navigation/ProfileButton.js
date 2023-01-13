@@ -60,18 +60,19 @@ export default function ProfileButton({user}) {
           <>
             <div>
               <OpenModalButton
-                buttonText="Log In"
-                onButtonClick={closeMenu}
-                modalComponent={<LoginFormModal />}
-              />
-            </div>
-            <div>
-              <OpenModalButton
                 buttonText="Sign Up"
                 onButtonClick={closeMenu}
                 modalComponent={<SignupFormModal />}
               />
             </div>
+            <div>
+              <OpenModalButton
+                buttonText="Log In"
+                onButtonClick={closeMenu}
+                modalComponent={<LoginFormModal />}
+              />
+            </div>
+            
           </>
         )}
       </ul>

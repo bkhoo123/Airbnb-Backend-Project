@@ -18,9 +18,9 @@ body {
     align-items: center;
     align-content: center;
     gap: 10px;
-    height: 30vh;
-    width: 90vw;
-    background: linear-gradient(to right, #FFECD2, #FCB69F)
+    height: 50vh;
+    width: 50vw;
+    border-radius: 10%;
 }
 
 .login-input {
@@ -54,8 +54,21 @@ body {
 }
 
 .login-button {
-    font-family: 'Montserrat';
+    font-family: monospace;
     font-size: 1.25rem;
+    border-style: none;
+}
+
+.login-button:hover {
+    background-color: azure
+}
+
+.profile-dropdown {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    border-width: 2px;
+    border-radius: 5%;
 }
 
 /*! Navigation Bar */
@@ -116,4 +129,5 @@ body {
   #modal-content {
     position: absolute;
     background-color:white;
+    border-radius: 3%;
   }
