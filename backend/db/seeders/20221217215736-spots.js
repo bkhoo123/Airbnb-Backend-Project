@@ -109,6 +109,54 @@ module.exports = {
         name: 'Breaknam',
         description: 'Come live your dreams next to the great oceans of Mexico',
         price: 127
+      },
+      {
+        ownerId: 1, 
+        address: '177 Jenner Beach',
+        city: 'Jenner',
+        state: 'California',
+        country: 'United States',
+        lat: 111,
+        lng: -56,
+        name: 'Tim and Reuben',
+        description: 'The Beach life you have always wanted to live out',
+        price: 177.50
+      },
+      {
+        ownerId: 2,
+        address: 'South Lake Tahoe Blvd',
+        city: 'South Lake Tahoe',
+        state: 'California',
+        country: 'United States',
+        lat: 172,
+        lng: 55,
+        name: "Mike Tyson",
+        description: 'Enjoy the great views and the Lake and the snow',
+        price: 1002
+      },
+      {
+        ownerId: 3,
+        address: 'Forest of Death',
+        city: 'Kyoto',
+        state: 'Kyoto Fu',
+        country: 'Japan',
+        lat: 111,
+        lng: 172,
+        name: 'Samurai',
+        description: 'Live with one with the forest',
+        price: 1777
+      },
+      {
+        ownerId: 4,
+        address: '3817 Caledonia Bay Lookout',
+        city: 'Pacific Grove',
+        state: 'California',
+        country: 'United States',
+        lat: 111,
+        lng: -51,
+        name: "True Home",
+        description: 'Dream Home',
+        price: 122
       }
     ], {})
   },

@@ -253,7 +253,7 @@ router.get('/:spotId', async (req, res, next) => {
     let spots = spotDetails.toJSON()
     spots.avgStarRating = avg.avgRating
     if (!avg.avgRating) {
-        spots.avgStarRating = 'No reviews have been made for this location'
+        spots.avgStarRating = 'No Reviews'
     }
 
 

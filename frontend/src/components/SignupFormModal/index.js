@@ -31,7 +31,11 @@ export default function SignupFormModal() {
   }
 
   return (
+    <>
+    
     <form className="signup-form" onSubmit={handleSubmit}>
+    <h3>Login or sign up</h3>
+    <h2>Welcome to airBKhoo</h2>
       <ul>
         {errors.map((error, idx) => <li key={idx}>{error}</li>)}
       </ul>
@@ -97,5 +101,6 @@ export default function SignupFormModal() {
       </label>
       <button type="submit">Sign Up</button>
     </form>
+    </>
   );
 }
