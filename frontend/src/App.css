@@ -11,6 +11,7 @@ p {
 
 li {
     list-style-type: none;
+    font-size: 1.25rem;
 }
 
 #root {
@@ -19,12 +20,17 @@ li {
     margin-top: 1%;
 }
 
+
+
 /*! inSession Profile Dropdown */
 .logout-button:hover {
-    color: purple;
-    background-color: antiquewhite;
+    background-color: white;
+    color: teal;
 }
 
+.logout-list:hover {
+    background-color: white;
+}
 
 /*! Login */
 
@@ -245,8 +251,18 @@ li {
 }
 
 .spot-info {
-    font-family: sans-serif;
+    /* text-align: center;
+    display: flexbox; */
 }
+
+.currentbuttons {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    align-content: center;
+    gap: 15px;
+}
+
 
 .location {
     font-weight: bold;
@@ -305,7 +321,7 @@ li {
     font-size: 1.1rem;
     font-weight: bold;
     background-color: mistyrose;
-    border-radius: 10%;
+    border-radius: 5%;
 }
 
 .insidespot-idbuttons:hover {

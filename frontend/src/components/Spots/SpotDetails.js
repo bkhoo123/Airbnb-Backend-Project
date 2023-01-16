@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function SpotDetails({id, spots}) {
   
-  const fillerDistance = [389, 55, 389, 77, 1055, 66, 22, 223, 587]  
+  const fillerDistance = [389, 55, 389, 77, 1055, 66, 22, 223, 587, 1222, 78, 99]  
   if (!spots) return null
   
   return (

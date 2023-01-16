@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react'
-import {useDispatch} from 'react-redux'
-import * as actionSpots from '../../store/spots'
-import {useHistory} from 'react-router-dom'
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useModal } from "../../context/Modal";
+import { createSpot } from "../../store/spots";
 
-export default function CreateSpot() {
+export default function CreateSpotFormModal() {
   const dispatch = useDispatch()
-  const history = useHistory()
-
+  
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
@@ -17,37 +16,34 @@ export default function CreateSpot() {
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [errors, setErrors] = useState([])
+  const { closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     const payload = {
-      address,
-      city,
-      state,
-      country,
-      lat,
-      lng,
-      name,
-      description,
-      price
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price
     }
-
-
     let createdSpot
-    
+
     try {
-      createdSpot = await dispatch(actionSpots.createSpot(payload))
-    } catch (error) {
-      if (error) setErrors(error.errors)
-      return (errors)
+        createdSpot = await dispatch(createSpot(payload)).then(closeModal)
+    } catch(error) {
+        if (error) setErrors(error.errors)
+        return(errors)
     }
-    
-    history.push(`/spots`)
   }
- 
+  
   return (
-    <div>
+    <div className="signup-form">
         <form className="create-spotform" onSubmit={handleSubmit} action="">
         <ul>
         {errors.map((error, idx) => <li key={idx}>{error}</li>)}
@@ -147,6 +143,3 @@ export default function CreateSpot() {
     </div>
   )
 }
-
-
-// address, city, state, country, lat, lng, name, description, price

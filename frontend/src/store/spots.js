@@ -6,10 +6,16 @@ const CREATE_SPOT = 'spots/createSpot'
 const UPDATE_SPOT = 'spots/updateSpot'
 const LOAD_ONESPOT = 'spots/getSpotById'
 const DELETE_SPOT = 'spot/deleteSpot'
+const LOAD_CURRENT = 'spots/current'
 
 
 const load = spot => ({
     type: LOAD_SPOTS,
+    spot
+})
+
+const loadCurrent = spot => ({
+    type: LOAD_CURRENT,
     spot
 })
 
@@ -41,6 +47,15 @@ export const getSpots = () => async dispatch => {
         const spots = await response.json()
         dispatch(load(spots))
         return spots
+    }
+}
+
+export const currentSpots = () => async dispatch => {
+    const response = await csrfFetch('/api/spots/current')
+    if (response.ok) {
+        const currentSpots = await response.json()
+        dispatch(loadCurrent(currentSpots))
+        return currentSpots
     }
 }
 
@@ -96,15 +111,26 @@ export const deleteSpot = id => async dispatch => {
     }
 }
 
-
-
 const initialState = {}
+
+// const initialState = {
+//     session: {},
+//     spots: {
+//         allSpots
+//     }
+// }
 
 
 export default function spotsReducer(state = initialState, action) {
     let newState
     switch(action.type) {
         case LOAD_SPOTS:
+            newState = Object.assign({}, state)
+            action.spot.Spots.forEach(spot => {
+                newState[spot.id] = spot
+            })
+            return newState
+        case LOAD_CURRENT: 
             newState = Object.assign({}, state)
             action.spot.Spots.forEach(spot => {
                 newState[spot.id] = spot

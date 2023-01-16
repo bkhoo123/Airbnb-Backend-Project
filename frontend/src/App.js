@@ -10,6 +10,8 @@ import './App.css'
 import SpotById from "./components/Spots/SpotById";
 import SpotDetails from "./components/Spots/SpotDetails";
 import Redirection from "./components/Redirection";
+import CurrentSpots from "./components/Spots/CurrentSpots";
+import { currentSpots } from "./store/spots";
 
 function App() {
   const {spotId} = useParams()
@@ -18,8 +20,11 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
+    dispatch(currentSpots())
   }, [dispatch]);
 
+  const current = useSelector(state => state.spots)
+  const currentArr = Object.values(current)
 
   return (
     <>
@@ -30,11 +35,11 @@ function App() {
           <Route exact path='/'>
             <Spots/>
           </Route>
-          <Route path='/host/homes'>
-            <CreateSpot/>
+          <Route exact path="/api/spots/current">
+            <CurrentSpots key={spotId}/>
           </Route>
-          <Route path="/api/spots/:spotId">
-          <SpotById/>
+          <Route exact path="/api/spots/:spotId">
+          <SpotById key={currentArr.id}/>
           </Route>
           <Route path="/deleted/success">
             <Redirection/>

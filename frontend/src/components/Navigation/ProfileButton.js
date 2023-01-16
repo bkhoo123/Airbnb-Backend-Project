@@ -4,8 +4,9 @@ import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import DemoFormModal from "../DemoFormModal";
+import spotsReducer from "../../store/spots";
 
 
 export default function ProfileButton({user}) {
@@ -45,6 +46,12 @@ export default function ProfileButton({user}) {
     history.push('/')
   }
 
+  const handleCurrent = () => {
+    closeMenu()
+    history.push('/api/spots/current')
+    
+  }
+
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden")
 
@@ -57,11 +64,14 @@ export default function ProfileButton({user}) {
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>{user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
-            <li>{user.email}</li>
-            <li>
-              <button className="logout-button" style={{fontFamily: 'Montserrat'}} onClick={logout}>Log Out</button>
+            <li>Username: {user.username}</li>
+            <li>Name: {user.firstName} {user.lastName}</li>
+            <li>Email: {user.email}</li>
+            <li className="logout-list">
+              <button className="logout-button" style={{fontFamily: 'Montserrat', borderStyle: 'solid', backgroundColor: 'mistyrose'}} onClick={logout}>Log Out</button>
+            </li>
+            <li className="logout-list">
+              <button className="logout-button" onClick={() => handleCurrent()} style={{fontFamily: 'Montserrat', borderStyle: 'solid', backgroundColor: 'mistyrose'}}>My Hosted Locations</button>
             </li>
           </>
         ) : (

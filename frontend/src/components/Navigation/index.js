@@ -1,10 +1,11 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import logo from '../Images/logo.jpg'
 import CreateSpot from '../Spots/CreateSpot';
+import OpenModalButton from '../OpenModalButton';
+import CreateSpotFormModal from '../CreateSpotFormModal';
 
 
 function Navigation({ isLoaded }){
@@ -19,7 +20,12 @@ function Navigation({ isLoaded }){
       </span>
       {isLoaded && (
         <span className="nav-rightcontainer">
-          <a className="create-spot" href="/host/homes">AirBKhoo your home</a>
+          <div>
+            <OpenModalButton
+            buttonText="AirBKhoo Host Your Home"
+            modalComponent={<CreateSpotFormModal/>}
+            />
+          </div>
           <ProfileButton user={sessionUser} />
         </span>
       )}

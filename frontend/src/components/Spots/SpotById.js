@@ -6,39 +6,29 @@ import { getSpotById } from '../../store/spots'
 import * as sessionActions from "../../store/session"
 import { deleteSpot } from '../../store/spots'
 import { useHistory } from 'react-router-dom'
+import OpenModalButton from '../OpenModalButton'
+import EditFormModal from '../EditFormModal'
 
-
-export default function SpotById() {
+const SpotById = () => {
   const history = useHistory()
   const {spotId} = useParams()
   const dispatch = useDispatch()
-  const [isLoaded, setIsLoaded] = useState(false) 
-  const [errors, setErrors] = useState([])
-  const [verified, setVerified] = useState(false)
+  const spot = useSelector(state => state.spots[spotId])
+  const user = useSelector(state => state.session.user)
+  
 
   useEffect(() => {
     dispatch(getSpotById(spotId))
     
   }, [dispatch, spotId])
 
-  const spot = useSelector(state => state.spots[spotId])
-  const user = useSelector(state => state.session.user)
-  if (!spot) return spot
-  if (!user) return user
   
-  // console.log('user', user)
-  // console.log('spot', spot)
-  // console.log('userId', userId)
-  // console.log('ownerId', ownerId)
-  
-  const userId = user.id
-  const ownerId = spot.ownerId
+  if (!spot) return null
+  if (!user) return null
+  if (!spot.SpotImages) return null
 
-  if (Number(userId) === Number(ownerId)) setVerified(true)
-  
-  // , 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties'
   //! Detail Arrays
-  let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House' ]
+  let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
   
   const handleClickDelete = () => {
       dispatch(deleteSpot(spotId))
@@ -48,15 +38,18 @@ export default function SpotById() {
   return (
     <>
     <h1>{title[spotId - 1]}</h1>
-    <span style={{fontSize: 20}}><i className="fa-solid fa-star"></i> {spot.avgStarRating} 
+    <span style={{fontSize: 20}}><i style={{color: 'gold'}} className="fa-solid fa-star"></i> {spot.avgStarRating} 
     <span> {spot.numReviews} Reviews </span>
     <span style={({textDecoration: "underline"})}>{spot.address}, {spot.city} {spot.state} {spot.country}</span></span>
 
     <span className="spotid-buttons">
-      <Link to="/api/spots/1/edit">
-      <button id={!verified ? "delete-hidden" : ""} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica'}}>Edit Hosting</button> 
-      </Link>
-      <button id={!verified ? "delete-hidden" : ""} className="insidespot-idbuttons" onClick={() => handleClickDelete()} style={{fontFamily: 'Helvetica'}}>Delete Hosting</button>
+      <div id={user.id === spot.ownerId ? "" : "delete-hidden"}>
+        <OpenModalButton
+        buttonText="Edit Location"
+        modalComponent={<EditFormModal/>}
+        />
+      </div>
+      <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={() => handleClickDelete()} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
       </span>
     <div className ='spot-idcontainer' style={{paddingTop: 5}}>
         <img className="spot-idimages" src={spot.SpotImages[0].url} alt="Server undergoing Maintenence" />
@@ -77,8 +70,10 @@ export default function SpotById() {
     <div>{spot.description}</div>
     </div>
     <div className="spotreview-container">
-
+      Reviews Go here
     </div>
     </>
   ) 
 }
+
+export default SpotById
