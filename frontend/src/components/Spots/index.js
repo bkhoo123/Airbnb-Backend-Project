@@ -12,13 +12,12 @@ export default function Spots() {
   const dispatch = useDispatch()
   const spots = useSelector(state => state.spots)
 
-  
-  
-  const spotsArr = Object.values(spots)
 
   useEffect(() => {
     dispatch(spotsActions.getSpots())
   }, [dispatch])
+
+  const spotsArr = Object.values(spots)
   if (!spots) return null
 
   return (

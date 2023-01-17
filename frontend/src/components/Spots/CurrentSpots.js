@@ -10,16 +10,16 @@ import EditFormModal from '../EditFormModal'
 export default function CurrentSpots() {
   const history = useHistory()
   const dispatch = useDispatch()
+  const current = useSelector(state => state.spots)
   
   
   useEffect(() => {
     dispatch(currentSpots())
   }, [dispatch])
-
-  const current = useSelector(state => state.spots)
   if (!current) return null
+  
   const currentArr = Object.values(current)
-  console.log(currentArr)
+  
 
   return (
     <div>
@@ -31,7 +31,7 @@ export default function CurrentSpots() {
         <div>
         <OpenModalButton
         buttonText="Edit Location"
-        modalComponent={<EditFormModal/>}
+        modalComponent={<EditFormModal  spot={spot}/>}
         />
         </div>
         <button onClick={() => dispatch(deleteSpot(spot.id), history.push('/'))} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem'}}>Delete Location</button>

@@ -8,6 +8,8 @@ import { deleteSpot } from '../../store/spots'
 import { useHistory } from 'react-router-dom'
 import OpenModalButton from '../OpenModalButton'
 import EditFormModal from '../EditFormModal'
+import { getSpotReviews } from '../../store/reviews'
+import ReviewFormModal from '../Reviews/ReviewFormModal'
 
 const SpotById = () => {
   const history = useHistory()
@@ -15,17 +17,25 @@ const SpotById = () => {
   const dispatch = useDispatch()
   const spot = useSelector(state => state.spots[spotId])
   const user = useSelector(state => state.session.user)
-  
+  const review = useSelector((state) => state.reviews)
 
   useEffect(() => {
+    dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
     
+    
   }, [dispatch, spotId])
+  
+  const reviewArr = Object.values(review)
 
+  console.log('reviewArr', reviewArr)
+  
   
   if (!spot) return null
   if (!user) return null
   if (!spot.SpotImages) return null
+  if (!review) return null
+  
 
   //! Detail Arrays
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
@@ -34,7 +44,7 @@ const SpotById = () => {
       dispatch(deleteSpot(spotId))
       history.push(`/deleted/success`)
   }
-
+  
   return (
     <>
     <h1>{title[spotId - 1]}</h1>
@@ -46,7 +56,7 @@ const SpotById = () => {
       <div id={user.id === spot.ownerId ? "" : "delete-hidden"}>
         <OpenModalButton
         buttonText="Edit Location"
-        modalComponent={<EditFormModal/>}
+        modalComponent={<EditFormModal spot={spot}/>}
         />
       </div>
       <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={() => handleClickDelete()} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
@@ -70,10 +80,26 @@ const SpotById = () => {
     <div>{spot.description}</div>
     </div>
     <div className="spotreview-container">
-      Reviews Go here
+      <h1 style={{textDecoration: 'underline'}}>Reviews<span style={{paddingLeft: 10}}>
+        <OpenModalButton
+        buttonText="Post Review"
+        modalComponent={<ReviewFormModal spotId={spotId} userId={user.id}/>}
+        />
+      </span>
+      </h1>
+      
+      <div>
+        {reviewArr[0].Reviews.map(review => (
+          <>
+          <h3> {review.User.firstName} {review.User.lastName} {review.stars} Star Review <i style={{color: 'gold'}} className="fa-solid fa-star"></i></h3>
+          <h3 style={{fontFamily: 'sans-serif', fontSize: '1.5rem', fontWeight: 'normal'}}>{review.review}</h3>
+          <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt}</span>
+          </>
+        ))}
+      </div>
     </div>
     </>
   ) 
 }
-
+// const reviewArray = reviewArr[0].Reviews
 export default SpotById

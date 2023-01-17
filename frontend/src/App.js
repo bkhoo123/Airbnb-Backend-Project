@@ -12,6 +12,8 @@ import SpotDetails from "./components/Spots/SpotDetails";
 import Redirection from "./components/Redirection";
 import CurrentSpots from "./components/Spots/CurrentSpots";
 import { currentSpots } from "./store/spots";
+import UpdateSuccess from "./components/Redirection/UpdateSuccess";
+import OnlyOneReview from "./components/Redirection/OnlyOneReview";
 
 function App() {
   const {spotId} = useParams()
@@ -23,8 +25,8 @@ function App() {
     dispatch(currentSpots())
   }, [dispatch]);
 
-  const current = useSelector(state => state.spots)
-  const currentArr = Object.values(current)
+  const spots = useSelector(state => state.spots)
+  
 
   return (
     <>
@@ -36,13 +38,19 @@ function App() {
             <Spots/>
           </Route>
           <Route exact path="/api/spots/current">
-            <CurrentSpots key={spotId}/>
+            <CurrentSpots/>
           </Route>
           <Route exact path="/api/spots/:spotId">
-          <SpotById key={currentArr.id}/>
+          <SpotById key={spots.id}/>
+          </Route>
+          <Route path="/update/success">
+            <UpdateSuccess/>
           </Route>
           <Route path="/deleted/success">
             <Redirection/>
+          </Route>
+          <Route path='/fail/review'>
+            <OnlyOneReview/>
           </Route>
         </Switch>
       )}

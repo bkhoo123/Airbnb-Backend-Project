@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
+import { useHistory } from "react-router-dom";
+import { updateSpot } from "../../store/spots";
 
-export default function EditFormModal() {
+export default function EditFormModal({spot}) {
   const dispatch = useDispatch()
+  const history = useHistory()
   
+
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
@@ -17,10 +21,13 @@ export default function EditFormModal() {
   const [errors, setErrors] = useState([])
   const { closeModal } = useModal();
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     const payload = {
+        ...spot,
         address,
         city,
         state,
@@ -34,7 +41,9 @@ export default function EditFormModal() {
     let updatedSpot
 
     try {
-        updatedSpot = await dispatch()
+        updatedSpot = await dispatch(updateSpot(payload)).then(closeModal)
+        history.push(`/update/success`)
+        
     } catch(error) {
         if (error) setErrors(error.errors)
         return(errors)
@@ -44,9 +53,6 @@ export default function EditFormModal() {
   return (
     <div className="signup-form">
         <form className="create-spotform" onSubmit={handleSubmit} action="">
-        <ul>
-        {errors.map((error, idx) => <li key={idx}>{error}</li>)}
-        </ul>
           <label>
           Address
           <input
@@ -137,7 +143,7 @@ export default function EditFormModal() {
             required
           />
         </label>
-        <button type="submit">Submit Your House</button>
+        <button className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem', marginTop: 15}} type="submit">Submit Your Location Edits</button>
           </form>
     </div>
   )

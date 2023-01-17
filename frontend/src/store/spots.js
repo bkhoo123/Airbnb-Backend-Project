@@ -41,6 +41,7 @@ const deleteOneSpot = (spot) => ({
 
 
 
+
 export const getSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots')
     if (response.ok) {
@@ -76,7 +77,7 @@ export const createSpot = spot => async dispatch => {
 }
 
 export const updateSpot = spot => async dispatch => {
-    const response = await csrfFetch('/api/spots', {
+    const response = await csrfFetch(`/api/spots/${spot.id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -111,14 +112,13 @@ export const deleteSpot = id => async dispatch => {
     }
 }
 
-const initialState = {}
 
-// const initialState = {
-//     session: {},
-//     spots: {
-//         allSpots
-//     }
-// }
+
+const initialState = {
+    
+}
+
+
 
 
 export default function spotsReducer(state = initialState, action) {
@@ -152,6 +152,7 @@ export default function spotsReducer(state = initialState, action) {
             newState = Object.assign({}, state)
             delete newState[action.spot.id]
             return newState
+        
     default: 
         return state 
     }

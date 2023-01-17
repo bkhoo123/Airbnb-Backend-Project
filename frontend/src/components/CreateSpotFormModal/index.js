@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { createSpot } from "../../store/spots";
+import { useHistory } from "react-router-dom";
 
 export default function CreateSpotFormModal() {
   const dispatch = useDispatch()
+  const history = useHistory()
   
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
@@ -36,6 +38,7 @@ export default function CreateSpotFormModal() {
 
     try {
         createdSpot = await dispatch(createSpot(payload)).then(closeModal)
+        history.push('/')
     } catch(error) {
         if (error) setErrors(error.errors)
         return(errors)
@@ -44,10 +47,8 @@ export default function CreateSpotFormModal() {
   
   return (
     <div className="signup-form">
+      <h3>List your Home Up and Become Rich being a Host</h3>
         <form className="create-spotform" onSubmit={handleSubmit} action="">
-        <ul>
-        {errors.map((error, idx) => <li key={idx}>{error}</li>)}
-        </ul>
           <label>
           Address
           <input
@@ -138,7 +139,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <button type="submit">Submit Your House</button>
+        <button className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem', marginTop: 15}} type="submit">Submit your House Listing</button>
           </form>
     </div>
   )
