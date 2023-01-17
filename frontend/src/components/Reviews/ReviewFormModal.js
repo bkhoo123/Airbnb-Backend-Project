@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { createSpot } from "../../store/spots";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 import { createSpotReview } from "../../store/reviews";
 
 export default function ReviewFormModal({spotId, userId}) {
@@ -14,31 +14,17 @@ export default function ReviewFormModal({spotId, userId}) {
   const [errors, setErrors] = useState("")
   const { closeModal } = useModal();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const payload = {
-      userId: userId,
-      spotId: spotId,
-      review,
-      stars
-    }
-
-    let createdReview
-
-    try {
-      createdReview = await dispatch(createSpotReview(payload)).then(closeModal)
-      history.push('/')
-
-    } catch (error) {
-      if (error) history.push('/fail/review')
-      closeModal()
-    }
+  const payload = {
+    userId: userId,
+    spotId: spotId,
+    review,
+    stars
   }
+
   
   return (
     <div className="signup-form">
-      <form className="create-spotform" onSubmit={handleSubmit} action="">
+      <form className="create-spotform" onSubmit={() => dispatch(createSpotReview(payload), closeModal(), <Redirect to={`/api/spots/${spotId}`}/>)} action="">
           <label>
           Type your Review here
           <textarea

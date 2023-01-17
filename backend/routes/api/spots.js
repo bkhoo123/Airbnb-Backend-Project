@@ -858,7 +858,7 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     })
 
     for (reviews of reviewsList) {
-        if (reviews.spotId == Number(spotId) && reviews.userId == Number(currentUser)) {
+        if (reviews.spotId === Number(spotId) && reviews.userId === Number(currentUser)) {
             res.status(403)
             return res.json({
                 message: "User already has a review for this spot",

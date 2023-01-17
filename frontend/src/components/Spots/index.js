@@ -11,7 +11,7 @@ import * as spotsActions from '../../store/spots';
 export default function Spots() {
   const dispatch = useDispatch()
   const spots = useSelector(state => state.spots)
-
+  
 
   useEffect(() => {
     dispatch(spotsActions.getSpots())
