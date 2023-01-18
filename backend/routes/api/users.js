@@ -148,28 +148,35 @@ router.post('/', async (req, res) => {
         }
       })
     }
-     
-    //* Checking Either Validation errors or the real sign up
-    try {
-      const user = await User.signup({ username, email, password, firstName, lastName});
-      return res.json({
-        user: user.toSafeObject(),
-        token: await setTokenCookie(res, user)
-        //? Possibly might need to change token to show up as an empty string
+
+    const user = await User.signup({username, email, password, firstName, lastName})
+
+    return res.json({
+      user: user.toSafeObject(),
+      token: await setTokenCookie(res, user)
     });
-    } catch (error) {
-      res.status(400)
-      return res.json({
-        message: "Validation error",
-        statusCode: 400,
-        errors: {
-          email: "Invalid email",
-          username: "Username is required",
-          firstName: "First Name is required",
-          lastName: "Last Name is required"
-        }
-      })
-    }
+     
+    // //* Checking Either Validation errors or the real sign up
+    // try {
+    //   const user = await User.signup({ username, email, password, firstName, lastName});
+    //   return res.json({
+    //     user: user.toSafeObject(),
+    //     token: await setTokenCookie(res, user)
+    //     //? Possibly might need to change token to show up as an empty string
+    // });
+    // } catch (error) {
+    //   res.status(400)
+    //   return res.json({
+    //     message: "Validation error",
+    //     statusCode: 400,
+    //     errors: {
+    //       email: "Invalid email",
+    //       username: "Username is required",
+    //       firstName: "First Name is required",
+    //       lastName: "Last Name is required"
+    //     }
+    //   })
+    // }
   } 
 );
 

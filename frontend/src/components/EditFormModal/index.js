@@ -14,8 +14,6 @@ export default function EditFormModal({spot}) {
   const [state, setState] = useState("")
   const [country, setCountry] = useState("")
   const [name, setName] = useState("")
-  const [lat, setLat] = useState(0)
-  const [lng, setLng] = useState(0)
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [errors, setErrors] = useState([])
@@ -25,6 +23,9 @@ export default function EditFormModal({spot}) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrors([])
+    let lat = 50
+    let lng = 50
 
     const payload = {
         ...spot,
@@ -38,20 +39,28 @@ export default function EditFormModal({spot}) {
         description,
         price
     }
-    let updatedSpot
+    
 
-    try {
-        updatedSpot = await dispatch(updateSpot(payload)).then(closeModal)
-        history.push(`/update/success`)
-        
-    } catch(error) {
-        if (error) setErrors(error.errors)
-        return(errors)
-    }
+    return dispatch(updateSpot(payload))
+      .then(closeModal)
+      .catch(
+        async(res) => {
+          const data = await res.json()
+          if (data && data.errors)  return setErrors(data.errors)
+        }
+      )
   }
+  
+  console.log('errors', errors)
   
   return (
     <div className="signup-form">
+      <h3>Edit Your Location</h3>
+      <ul>
+        {console.log('errors', errors)}
+        {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
+      </ul>
+        
         <form className="create-spotform" onSubmit={handleSubmit} action="">
           <label>
           Address
@@ -90,26 +99,6 @@ export default function EditFormModal({spot}) {
             type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          lng
-          <input
-            className="signup-input"
-            type="text"
-            value={lng}
-            onChange={(e) => setLng(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          lat
-          <input
-            className="signup-input"
-            type="text"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
             required
           />
         </label>

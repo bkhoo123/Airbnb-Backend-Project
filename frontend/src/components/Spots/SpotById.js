@@ -21,21 +21,18 @@ const SpotById = () => {
   const review = useSelector(state => state.reviews)
 
   useEffect(() => {
-    dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
-    
-    
+    dispatch(getSpotReviews(spotId))
   }, [dispatch, spotId])
   
   const reviewArr = Object.values(review)
 
   
-  console.log(reviewArr)
-  
   if (!spot) return null
   if (!user) return null
   if (!spot.SpotImages) return null
   if (!review) return null
+  if (!reviewArr) return null
   
 
   //! Detail Arrays
@@ -45,6 +42,7 @@ const SpotById = () => {
       dispatch(deleteSpot(spotId))
       history.push(`/deleted/success`)
   }
+
 
   
   return (
@@ -61,32 +59,31 @@ const SpotById = () => {
         modalComponent={<EditFormModal spot={spot}/>}
         />
       </div>
-      <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={() => handleClickDelete()} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
+      <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={handleClickDelete} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
       </span>
-    <div className ='spot-idcontainer' style={{paddingTop: 5}}>
-      {spot.SpotImages[0].url ? ( 
-        <>
+      
+      {spot.SpotImages.length !== 0 ? (
+        <div className ='spot-idcontainer' style={{paddingTop: 5}}>       
         <img className="spot-idimages" src={spot.SpotImages[0].url} alt="Server undergoing Maintenence" />
         <div className = "right-spotidcontainer">
             <img className="spotidright-image" src={spot.SpotImages[1].url}  alt="" />
             <img className="spotidright-image" src={spot.SpotImages[2].url}  alt="" />
             <img className="spotidright-image" src={spot.SpotImages[3].url}  alt="" />
             <img className="spotidright-image" src={spot.SpotImages[4].url}  alt="" />
-        </div>
-        </>
-       ) : (  
-        <>
-            <img className="spot-idimages" src="https://a0.muscache.com/im/pictures/8db6ed20-fc30-4f7e-ae90-3f860874158b.jpg?im_w=1200" alt="Server undergoing Maintenence" />
-            <div className = "right-spotidcontainer">
-            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/11de73ab-f346-4313-82af-4f92617c6751.jpg?im_w=720"  alt="" />
-            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/e331a478-330e-4256-975d-d2ae722d82e4.jpg?im_w=720"  alt="" />
-            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/441bf0ac-a272-4aad-9cef-326b94d7aa1a.jpg?im_w=720"  alt="" />
-            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/6c970eef-7678-4c18-8611-46b1c49c5fa9.jpg?im_w=720" alt="" />
-        </div>
-        </>
-       )}
-        
-    </div>
+        </div>    
+      </div>
+      ) : (
+        <div className ='spot-idcontainer' style={{paddingTop: 5}}>       
+        <img className="spot-idimages" src="https://a0.muscache.com/im/pictures/d4993a5e-b986-4183-a3e4-244f8be66ed9.jpg?im_w=720" alt="Server undergoing Maintenence" />
+        <div className = "right-spotidcontainer">
+            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/cc01a848-de55-48b3-87f1-8950bc5a822c.jpg?im_w=720" alt="" />
+            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/66c19a34-2e46-4f32-b78a-b399d6ad48cd.jpg?im_w=720"  alt="" />
+            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/5ae05267-bf5f-4999-9084-7ce64ef1f836.jpg?im_w=1200" alt="" />
+            <img className="spotidright-image" src="https://a0.muscache.com/im/pictures/04ccf07c-7cbf-4b02-aaba-93452796fba1.jpg?im_w=720"  alt="" />
+        </div>    
+      </div>
+      )}
+    
     <div>
     <h2>Hosted By: {spot.name}</h2>
     <h2>Price Per Night: ${spot.price}</h2>
@@ -94,7 +91,7 @@ const SpotById = () => {
      
     <div className="spot-bottomcontainer">
     <div>5 guests 1 bedroom 1 bed 1 bath</div>
-    <div>{spot.description}</div>
+    <div style={{marginTop: 10}}>{spot.description}</div>
     </div>
     <div className="spotreview-container">
       <h1 style={{textDecoration: 'underline'}}>Reviews<span style={{paddingLeft: 10}}>
@@ -104,11 +101,15 @@ const SpotById = () => {
         />
       </span>
       </h1>
+      {/* history.push(`/api/spots/${spotId}`) */}
       
       <div>
-        {reviewArr[0]?.Reviews?.map(review => (
+        {reviewArr.map(review => (
           <>
-          <h3> {review.User?.firstName} {review.User?.lastName} {review.stars} Star Review <i style={{color: 'gold'}} className="fa-solid fa-star"></i> <button id={review.User.id === user.id ? "" : "delete-hidden"} onClick={() => dispatch(deleteSpotReview(review.id), <Redirect to={`/api/spots/${spotId}`}/>)} className="insidespot-idbuttons">Delete Review</button></h3>
+          <h3> {review.User?.firstName} {review.User?.lastName} {review.stars} Star Review <i style={{color: 'gold'}} className="fa-solid fa-star"></i> 
+          {review.User.id === user.id && (<button style={{marginLeft: 10}} 
+          onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/api/spots/${Number(spotId)}`))} className="insidespot-idbuttons">Delete Review</button>)}
+          </h3>
           <h3 style={{fontFamily: 'sans-serif', fontSize: '1.5rem', fontWeight: 'normal'}}>{review.review}</h3>
           <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt}</span>
           </>

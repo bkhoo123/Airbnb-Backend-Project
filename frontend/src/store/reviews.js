@@ -50,7 +50,7 @@ export const deleteSpotReview = id => async dispatch => {
     })
     if (response.ok) {
         const deletedReview = await response.json()
-        dispatch(deleteReview(deletedReview))
+        dispatch(deleteReview(id))
         return deletedReview
     }
 }
@@ -61,16 +61,19 @@ export default function reviewsReducer(state = initialState, action) {
     let newState
     switch(action.type) {
         case READ_SPOTREVIEWS:
-            newState = Object.assign({}, state)
-            newState[action.review.id] = action.review
+            newState = {}
+            action.review.Reviews.forEach(review => {
+                newState[review.id] = review
+            })
             return newState
         case CREATE_SPOTREVIEW:
             newState = Object.assign({}, state)
             newState[action.spot.id] = action.spot
+            newState[action.spot.id].User = {id: action.spot.userId} 
             return newState
         case DELETE_SPOTREVIEW:
             newState = Object.assign({}, state)
-            delete newState[action.spot.id]
+            delete newState[action.spot]
             return newState
     default:
         return state

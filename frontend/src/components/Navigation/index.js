@@ -10,13 +10,14 @@ import CreateSpotFormModal from '../CreateSpotFormModal';
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
+  
   const url = '/api/spots/'
 
   return (
     <div className="nav-bar">
-      <span>
-        <NavLink exact to="/"><i className="fa-brands fa-airbnb"/></NavLink>
-        <span className="logo-name">airBKhoo</span>
+      <span > 
+        <NavLink style={{textDecoration: "none"}} exact to="/"><i className="fa-brands fa-airbnb"/><span className="logo-name">airBKhoo</span></NavLink>
+        
       </span>
       {isLoaded && (
         <span className="nav-rightcontainer">

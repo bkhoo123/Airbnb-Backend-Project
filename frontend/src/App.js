@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, Switch, useParams, NavLink } from "react-router-dom";
+import { Route, Switch, useParams, NavLink, Redirect } from "react-router-dom";
 import * as sessionActions from "./store/session";
 import * as spotsActions from "./store/spots"
 import Navigation from "./components/Navigation";
@@ -13,7 +13,8 @@ import Redirection from "./components/Redirection";
 import CurrentSpots from "./components/Spots/CurrentSpots";
 import { currentSpots } from "./store/spots";
 import UpdateSuccess from "./components/Redirection/UpdateSuccess";
-import OnlyOneReview from "./components/Redirection/OnlyOneReview";
+import OnlyAuthenticatedUser from "./components/Redirection/OnlyAuthenticatedUser";
+
 
 function App() {
   const {spotId} = useParams()
@@ -22,11 +23,18 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
-    dispatch(currentSpots())
+    
   }, [dispatch]);
 
   const spots = useSelector(state => state.spots)
+  const reviews = useSelector(state => state.reviews)
+  const user = useSelector(state => state.session)
   
+  if (!user) return null
+  if (!spots) return null
+  if (!reviews) return null
+
+  let currentSession = Object.values(user)[0]
 
   return (
     <>
@@ -40,8 +48,8 @@ function App() {
           <Route exact path="/api/spots/current">
             <CurrentSpots/>
           </Route>
-          <Route exact path="/api/spots/:spotId">
-          <SpotById key={spots.id}/>
+          <Route path="/api/spots/:spotId">
+          {currentSession === null ? <Redirect to="/authenticate"/> : <SpotById key={spots.id}/>}
           </Route>
           <Route path="/update/success">
             <UpdateSuccess/>
@@ -49,8 +57,8 @@ function App() {
           <Route path="/deleted/success">
             <Redirection/>
           </Route>
-          <Route path='/fail/review'>
-            <OnlyOneReview/>
+          <Route path="/authenticate">
+            <OnlyAuthenticatedUser/>
           </Route>
         </Switch>
       )}

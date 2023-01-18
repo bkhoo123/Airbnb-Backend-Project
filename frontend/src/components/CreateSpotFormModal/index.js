@@ -13,15 +13,17 @@ export default function CreateSpotFormModal() {
   const [state, setState] = useState("")
   const [country, setCountry] = useState("")
   const [name, setName] = useState("")
-  const [lat, setLat] = useState(0)
-  const [lng, setLng] = useState(0)
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [errors, setErrors] = useState([])
+  const [previewImage, setPreviewImage] = useState("Must be a image URL")
   const { closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrors([])
+    let lat = 50
+    let lng = 50
 
     const payload = {
         address,
@@ -34,19 +36,26 @@ export default function CreateSpotFormModal() {
         description,
         price
     }
-    let createdSpot
-
-    try {
-        createdSpot = await dispatch(createSpot(payload)).then(closeModal)
-        history.push('/')
-    } catch(error) {
-        if (error) setErrors(error.errors)
-        return(errors)
-    }
+    
+    return dispatch(createSpot(payload))
+      .then(closeModal)
+      .then(history.push(`/api/spots/:spotId`))
+      .catch(
+        async(res) => {
+          const data = await res.json()
+          if (data) return setErrors(data.errors)
+        }
+      )
   }
+  const values = Object.values(errors)
   
   return (
     <div className="signup-form">
+      <ul>
+        {console.log('values', values)}
+        {(values.map((error, idx) => <li key={idx}>{error}</li>))}
+      </ul>
+
       <h3>List your Home Up and Become Rich being a Host</h3>
         <form className="create-spotform" onSubmit={handleSubmit} action="">
           <label>
@@ -90,26 +99,6 @@ export default function CreateSpotFormModal() {
           />
         </label>
         <label>
-          lng
-          <input
-            className="signup-input"
-            type="text"
-            value={lng}
-            onChange={(e) => setLng(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          lat
-          <input
-            className="signup-input"
-            type="text"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
-            required
-          />
-        </label>
-        <label>
           Name
           <input
             className="signup-input"
@@ -126,6 +115,16 @@ export default function CreateSpotFormModal() {
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          PreviewImage
+          <input
+            className="signup-input"
+            type="text"
+            value={previewImage}
+            onChange={(e) => setPreviewImage(e.target.value)}
             required
           />
         </label>

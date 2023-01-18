@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import * as sessionActions from "../../store/session";
+import { useHistory } from "react-router-dom";
 
 export default function SignupFormModal() {
   const dispatch = useDispatch()
@@ -21,24 +22,25 @@ export default function SignupFormModal() {
     e.preventDefault()
     if (password === confirmPassword) {
       setErrors([])
-      return dispatch(sessionActions.signupUser({email, username, firstName, lastName, password}))
+      return dispatch(sessionActions.signupUser({email, username, firstName, lastName, password})).then(closeModal)
         .catch(async (res) => {
           const data = await res.json()
-          if (data && data.errors) setErrors(data.errors)
+          if (data && data.errors) return setErrors(data.errors)
         })
     }
     return setErrors(['Confirm Password field must be the same as the Password field'])
   }
+  const values = Object.values(errors)
 
   return (
     <>
-    
     <form className="signup-form" onSubmit={handleSubmit}>
+    <ul>
+        {console.log('values', values)}
+        {(values.map((error, idx) => <li key={idx}>{error}</li>))}
+      </ul>
     <h3>Login or sign up</h3>
     <h2>Welcome to airBKhoo</h2>
-      <ul>
-        {errors.map((error, idx) => <li key={idx}>{error}</li>)}
-      </ul>
       <label>
         Email
         <input

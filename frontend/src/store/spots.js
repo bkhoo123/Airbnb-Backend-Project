@@ -107,15 +107,15 @@ export const deleteSpot = id => async dispatch => {
     
     if (response.ok) {
         const deletedSpot = await response.json()
-        dispatch(deleteOneSpot(deletedSpot))
+        dispatch(deleteOneSpot(id))
+        
         return deletedSpot
     }
 }
 
 
 
-const initialState = {
-    
+const initialState = {    
 }
 
 
@@ -131,7 +131,7 @@ export default function spotsReducer(state = initialState, action) {
             })
             return newState
         case LOAD_CURRENT: 
-            newState = Object.assign({}, state)
+            newState = {}
             action.spot.Spots.forEach(spot => {
                 newState[spot.id] = spot
             })
@@ -142,15 +142,16 @@ export default function spotsReducer(state = initialState, action) {
             return newState
         case UPDATE_SPOT: 
             newState = Object.assign({}, state)
-            newState[action.spot.id] = action.spot
+            newState[action.spot] = action.spot
             return newState
         case LOAD_ONESPOT:
             newState = Object.assign({}, state)
             newState[action.spot.id] = action.spot
+            
             return newState
         case DELETE_SPOT: 
             newState = Object.assign({}, state)
-            delete newState[action.spot.id]
+            delete newState[action.spot]
             return newState
         
     default: 

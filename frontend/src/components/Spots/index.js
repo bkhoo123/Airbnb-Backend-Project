@@ -26,10 +26,8 @@ export default function Spots() {
       {spotsArr.map((spot) => (
         <Link key={spot.id} className="spot-detailslink" to={`/api/spots/${spot.id}`}>
         <SpotDetails  spots={spot}/>
-        
         </Link>
       ))}
-      
       </div>
     </>
   )

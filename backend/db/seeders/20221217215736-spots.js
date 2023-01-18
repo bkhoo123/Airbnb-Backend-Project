@@ -89,7 +89,7 @@ module.exports = {
       {
         ownerId: 7,
         address: '123 HedgeMaze',
-        city: 'Tambon Khao Hin Son',
+        city: 'Tambon',
         state: 'Chang Wat',
         country: 'Thailand',
         lat: 122,
