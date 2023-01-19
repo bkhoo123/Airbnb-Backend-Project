@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { useHistory } from "react-router-dom";
 import { updateSpot } from "../../store/spots";
+import { getSpots } from "../../store/spots";
 
-export default function EditFormModal({spot}) {
+export default function EditFormModal({spot, spotId}) {
   const dispatch = useDispatch()
   const history = useHistory()
   
-
+  
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
@@ -16,10 +17,15 @@ export default function EditFormModal({spot}) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
+  const [previewImage, setPreviewImage] = useState("Must be a image URL")
   const [errors, setErrors] = useState([])
   const { closeModal } = useModal();
 
-
+  
+  const Owner = spot.Owner
+  
+  const SpotImages = spot.SpotImages
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,6 +33,7 @@ export default function EditFormModal({spot}) {
     let lat = 50
     let lng = 50
 
+    
     const payload = {
         ...spot,
         address,
@@ -40,24 +47,22 @@ export default function EditFormModal({spot}) {
         price
     }
     
-
-    return dispatch(updateSpot(payload))
+    const updatedSpot = await dispatch(updateSpot(payload, Owner, SpotImages))
       .then(closeModal)
-      .catch(
-        async(res) => {
-          const data = await res.json()
-          if (data && data.errors)  return setErrors(data.errors)
-        }
-      )
+      .then(history.push(`/api/spots/${spot.id}`))
+      // .catch(
+      //   async(res) => {
+      //     const data = await res.json()
+      //     if (data && data.errors)  return setErrors(data.errors)
+      //   }
+      // )
   }
   
-  console.log('errors', errors)
   
   return (
     <div className="signup-form">
       <h3>Edit Your Location</h3>
       <ul>
-        {console.log('errors', errors)}
         {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
       </ul>
         
@@ -123,10 +128,20 @@ export default function EditFormModal({spot}) {
           />
         </label>
         <label>
-          Price
+          PreviewImage
           <input
             className="signup-input"
             type="text"
+            value={previewImage}
+            onChange={(e) => setPreviewImage(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Price
+          <input
+            className="signup-input"
+            type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required

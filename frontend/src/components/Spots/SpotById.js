@@ -11,6 +11,7 @@ import EditFormModal from '../EditFormModal'
 import { getSpotReviews } from '../../store/reviews'
 import ReviewFormModal from '../Reviews/ReviewFormModal'
 import { deleteSpotReview } from '../../store/reviews'
+import { getSpots } from '../../store/spots'
 
 const SpotById = () => {
   const history = useHistory()
@@ -19,10 +20,12 @@ const SpotById = () => {
   const spot = useSelector(state => state.spots[spotId])
   const user = useSelector(state => state.session.user)
   const review = useSelector(state => state.reviews)
+  const allSpots = useSelector(state => state.spots)
 
   useEffect(() => {
-    dispatch(getSpotById(spotId))
     dispatch(getSpotReviews(spotId))
+    dispatch(getSpotById(spotId))
+    
   }, [dispatch, spotId])
   
   const reviewArr = Object.values(review)
@@ -32,7 +35,8 @@ const SpotById = () => {
   if (!user) return null
   if (!spot.SpotImages) return null
   if (!review) return null
-  if (!reviewArr) return null
+  if (!reviewArr) return null 
+  if (!allSpots) return null
   
 
   //! Detail Arrays
@@ -56,13 +60,13 @@ const SpotById = () => {
       <div id={user.id === spot.ownerId ? "" : "delete-hidden"}>
         <OpenModalButton
         buttonText="Edit Location"
-        modalComponent={<EditFormModal spot={spot}/>}
+        modalComponent={<EditFormModal spotId={spotId} spot={spot}/>}
         />
       </div>
       <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={handleClickDelete} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
       </span>
       
-      {spot.SpotImages.length !== 0 ? (
+      {spot.SpotImages?.length !== 0 ? (
         <div className ='spot-idcontainer' style={{paddingTop: 5}}>       
         <img className="spot-idimages" src={spot.SpotImages[0].url} alt="Server undergoing Maintenence" />
         <div className = "right-spotidcontainer">

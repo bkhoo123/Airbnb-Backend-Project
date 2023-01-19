@@ -14,6 +14,7 @@ import CurrentSpots from "./components/Spots/CurrentSpots";
 import { currentSpots } from "./store/spots";
 import UpdateSuccess from "./components/Redirection/UpdateSuccess";
 import OnlyAuthenticatedUser from "./components/Redirection/OnlyAuthenticatedUser";
+import SpotByIdPlaceHolder from "./components/Redirection/SpotByIdPlaceHolder";
 
 
 function App() {
@@ -59,6 +60,9 @@ function App() {
           </Route>
           <Route path="/authenticate">
             <OnlyAuthenticatedUser/>
+          </Route>
+          <Route path='/placeholder'>
+            <SpotByIdPlaceHolder/>
           </Route>
         </Switch>
       )}

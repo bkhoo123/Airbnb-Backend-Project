@@ -26,6 +26,7 @@ export default function CreateSpotFormModal() {
     let lng = 50
 
     const payload = {
+        
         address,
         city,
         state,
@@ -37,9 +38,8 @@ export default function CreateSpotFormModal() {
         price
     }
     
-    return dispatch(createSpot(payload))
-      .then(closeModal)
-      .then(history.push(`/api/spots/:spotId`))
+    const newlyCreatedSpot = dispatch(createSpot(payload))
+      .then((newlyCreatedSpot) => {history.push(`/api/spots/${newlyCreatedSpot.id}`)}, closeModal())
       .catch(
         async(res) => {
           const data = await res.json()
@@ -52,7 +52,6 @@ export default function CreateSpotFormModal() {
   return (
     <div className="signup-form">
       <ul>
-        {console.log('values', values)}
         {(values.map((error, idx) => <li key={idx}>{error}</li>))}
       </ul>
 
@@ -132,7 +131,7 @@ export default function CreateSpotFormModal() {
           Price
           <input
             className="signup-input"
-            type="text"
+            type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required

@@ -1,3 +1,4 @@
+import { bindActionCreators } from 'redux'
 import {csrfFetch} from './csrf'
 
 
@@ -26,7 +27,7 @@ const createOneSpot = spot => ({
 
 const updateOneSpot = spot => ({
     type: UPDATE_SPOT,
-    spot
+    spot,
 })
 
 const getOneSpot = spot => ({
@@ -61,6 +62,7 @@ export const currentSpots = () => async dispatch => {
 }
 
 export const createSpot = spot => async dispatch => {
+    console.log('incoming createSpot variable', spot)
     const response = await csrfFetch('/api/spots', {
         method: 'POST',
         headers: {
@@ -70,23 +72,39 @@ export const createSpot = spot => async dispatch => {
     })
     if (response.ok) {
         const spot = await response.json()
-        
         dispatch(createOneSpot(spot))
         return spot
     }
 }
 
-export const updateSpot = spot => async dispatch => {
-    const response = await csrfFetch(`/api/spots/${spot.id}`, {
+export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
+    const {address, city, country, createdAt, description, id, lat, lng, name, ownerId, price, state, updatedAt} = payload
+    const response = await csrfFetch(`/api/spots/${payload.id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(spot)
+        body: JSON.stringify(payload)
     })
     if (response.ok) {
         const spot = await response.json()
-        dispatch(updateOneSpot(spot))
+        dispatch(updateOneSpot({
+            Owner: Owner,
+            SpotImages: SpotImages,
+            address: address,
+            city: city,
+            country: country,
+            createdAt: createdAt,
+            description: description,
+            id: id,
+            lat: lat,
+            lng: lng,
+            name: name,
+            ownerId: ownerId,
+            price: price, 
+            state: state,
+            updatedAt: updatedAt
+        }))
         return spot
     }
 }
@@ -115,7 +133,8 @@ export const deleteSpot = id => async dispatch => {
 
 
 
-const initialState = {    
+const initialState = {
+    
 }
 
 
@@ -141,8 +160,9 @@ export default function spotsReducer(state = initialState, action) {
             newState[action.spot.id] = action.spot
             return newState
         case UPDATE_SPOT: 
+            console.log(action.spot, 'actionupdateSPot')
             newState = Object.assign({}, state)
-            newState[action.spot] = action.spot
+            newState[action.spot.id] = action.spot
             return newState
         case LOAD_ONESPOT:
             newState = Object.assign({}, state)
@@ -158,6 +178,8 @@ export default function spotsReducer(state = initialState, action) {
         return state 
     }
 }
+
+
 
 
 
