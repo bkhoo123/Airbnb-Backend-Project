@@ -11,7 +11,7 @@ export default function OpenModalButton({modalComponent, buttonText, onButtonCli
   };
 
   return (
-    <button className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem'}} onClick={onClick}>{buttonText}</button>
+    <button className="insidespot-idbuttons"  onClick={onClick}>{buttonText}</button>
   )
 }
 

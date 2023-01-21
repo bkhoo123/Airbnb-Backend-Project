@@ -12,6 +12,7 @@ import { getSpotReviews } from '../../store/reviews'
 import ReviewFormModal from '../Reviews/ReviewFormModal'
 import { deleteSpotReview } from '../../store/reviews'
 import { getSpots } from '../../store/spots'
+import FavoriteFormModal from '../FavoriteFormModal'
 
 const SpotById = () => {
   const history = useHistory()
@@ -20,15 +21,21 @@ const SpotById = () => {
   const spot = useSelector(state => state.spots[spotId])
   const user = useSelector(state => state.session.user)
   const review = useSelector(state => state.reviews)
-  const allSpots = useSelector(state => state.spots)
+  const [average, setAverage] = useState(0)
+  const reviewArr = Object.values(review)
+
+  let count = 0 
+  reviewArr.forEach((review) => {
+    count += Number(review.stars)
+  })
 
   useEffect(() => {
     dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
-    
-  }, [dispatch, spotId])
+    setAverage(count / reviewArr.length)
+  }, [dispatch, spotId, count])
   
-  const reviewArr = Object.values(review)
+  
 
   
   if (!spot) return null
@@ -36,34 +43,51 @@ const SpotById = () => {
   if (!spot.SpotImages) return null
   if (!review) return null
   if (!reviewArr) return null 
-  if (!allSpots) return null
   
-
+  console.log(reviewArr)
   //! Detail Arrays
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
   
   const handleClickDelete = () => {
-      dispatch(deleteSpot(spotId))
-      history.push(`/deleted/success`)
+      dispatch(deleteSpot(Number(spotId)))
+      history.push(`/`)
   }
 
 
+
+  
+  // console.log(count)
+  // console.log(reviewArr.length)
+  // console.log(average)
+  
   
   return (
     <>
-    <h1>{title[spotId - 1]}</h1>
-    <span style={{fontSize: 20}}><i style={{color: 'gold'}} className="fa-solid fa-star"></i> {spot.avgStarRating} 
-    <span> {spot.numReviews} Reviews </span>
+    <h1>
+      {title[spotId - 1]} 
+     {/* <span style={{marginLeft: 10}}> 
+     
+      <OpenModalButton
+      buttonText={<i id="spotid-favorite" class="fa-solid fa-heart"></i>}
+      modalComponent={<FavoriteFormModal spotId={spotId} spot={spot}/>}
+      />
+      </span> */}
+    </h1>
+    
+    <span style={{fontSize: 20}}><i style={{color: 'gold'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} 
+    <span> {spot?.numReviews} Reviews </span>
+    
     <span style={({textDecoration: "underline"})}>{spot.address}, {spot.city} {spot.state} {spot.country}</span></span>
 
     <span className="spotid-buttons">
       <div id={user.id === spot.ownerId ? "" : "delete-hidden"}>
         <OpenModalButton
         buttonText="Edit Location"
+        
         modalComponent={<EditFormModal spotId={spotId} spot={spot}/>}
         />
       </div>
-      <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="insidespot-idbuttons" onClick={handleClickDelete} style={{fontFamily: 'Helvetica'}}>Delete Location</button>
+      <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="deletespot-button" onClick={handleClickDelete} >Delete Location</button>
       </span>
       
       {spot.SpotImages?.length !== 0 ? (
@@ -92,14 +116,16 @@ const SpotById = () => {
     <h2>Hosted By: {spot.name}</h2>
     <h2>Price Per Night: ${spot.price}</h2>
     </div>
-     
+    <hr />
     <div className="spot-bottomcontainer">
     <div>5 guests 1 bedroom 1 bed 1 bath</div>
     <div style={{marginTop: 10}}>{spot.description}</div>
     </div>
     <div className="spotreview-container">
-      <h1 style={{textDecoration: 'underline'}}>Reviews<span style={{paddingLeft: 10}}>
+      <hr />
+      <h1 style={{textDecoration: 'underline', display: 'flex', alignItems: 'center'}}>Reviews<span style={{paddingLeft: 10}}>
         <OpenModalButton
+        onButtonClick={() => {spot.numReviews += 1}}
         buttonText="Post Review"
         modalComponent={<ReviewFormModal spotId={spotId} userId={user.id}/>}
         />
@@ -112,10 +138,11 @@ const SpotById = () => {
           <>
           <h3> {review.User?.firstName} {review.User?.lastName} {review.stars} Star Review <i style={{color: 'gold'}} className="fa-solid fa-star"></i> 
           {review.User.id === user.id && (<button style={{marginLeft: 10}} 
-          onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/api/spots/${Number(spotId)}`))} className="insidespot-idbuttons">Delete Review</button>)}
+          onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/spots/${Number(spotId)}`)).then(spot.numReviews -=1)} className="insidespot-idbuttons">Delete Review</button>)}
           </h3>
-          <h3 style={{fontFamily: 'sans-serif', fontSize: '1.5rem', fontWeight: 'normal'}}>{review.review}</h3>
-          <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt}</span>
+          <h3 style={{fontFamily: 'Helvetica', fontSize: '1.5rem', fontWeight: 'normal'}}>{review.review}</h3>
+          <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt.split("T")[0]}</span>
+          <hr />
           </>
         ))}
       </div>

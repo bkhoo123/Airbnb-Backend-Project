@@ -31,6 +31,7 @@ export default function ReviewFormModal({spotId, userId}) {
 
     return dispatch(createSpotReview(payload))
       .then(closeModal)
+      .then(history.push(`/spots/${spotId}`))
       .catch(
         async(res) => {
           const data = await res.json()

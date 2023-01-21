@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, startTransition } from "react";
 import { useDispatch } from 'react-redux';
 import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
@@ -48,10 +48,13 @@ export default function ProfileButton({user}) {
 
   const handleCurrent = () => {
     closeMenu()
-    history.push('/api/spots/current')
-    
+    history.push('/spots/current')
   }
 
+  const handleFavorite = () => {
+    closeMenu()
+    history.push('/favoritespots')
+  }
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden")
 
@@ -68,34 +71,41 @@ export default function ProfileButton({user}) {
             <li>Name: {user.firstName} {user.lastName}</li>
             <li>Email: {user.email}</li>
             <li className="logout-list">
-              <button className="logout-button" style={{fontFamily: 'Montserrat', borderStyle: 'solid', backgroundColor: 'mistyrose'}} onClick={logout}>Log Out</button>
+              <button className="logout-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '15vw', marginTop: 10, cursor: 'pointer'}} onClick={logout}>Log Out</button>
             </li>
             <li className="logout-list">
-              <button className="logout-button" onClick={() => handleCurrent()} style={{fontFamily: 'Montserrat', borderStyle: 'solid', backgroundColor: 'mistyrose'}}>My Hosted Locations</button>
+              <button className="logout-button"  onClick={() => handleCurrent()} style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 50, width: '15vw', cursor: 'pointer'}}>My Hosted Locations</button>
+            </li>
+            <li className="logout-button">
+                <button onClick={() => handleFavorite()} className="logout-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw', cursor: 'pointer'}}>Favorites</button>
             </li>
           </>
         ) : (
           <>
-            <div>
+            <div style={{display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '10vw', marginTop: 10, cursor: 'pointer'}}>
               <OpenModalButton
                 buttonText="Sign Up"
                 onButtonClick={closeMenu}
                 modalComponent={<SignupFormModal />}
               />
             </div>
-            <div>
+            <div style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '10vw', marginTop: 10, cursor: 'pointer'}}>
               <OpenModalButton
                 buttonText="Log In"
                 onButtonClick={closeMenu}
                 modalComponent={<LoginFormModal />}
               />
             </div>
+            <div style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '10vw', marginTop: 10, cursor: 'pointer'}}>
             {/* <button onClick={() => dispatch(sessionActions.login(fakeCredentials, fakePassword))} className="demo-user" style={{hover: 'antiquewhite'}}>Demo User</button> */}
             <OpenModalButton
               buttonText="Demo User"
               onButtonClick={closeMenu}
               modalComponent={<DemoFormModal/>}
             />
+            </div>
+            </div>
           </>
         )}
       </ul>

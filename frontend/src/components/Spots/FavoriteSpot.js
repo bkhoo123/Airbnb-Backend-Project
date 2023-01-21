@@ -1,5 +1,5 @@
 import React from 'react'
-import { currentSpots } from '../../store/spots'
+import { favoriteSpots } from '../../store/spots'
 import {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
@@ -8,19 +8,19 @@ import OpenModalButton from '../OpenModalButton'
 import EditFormModal from '../EditFormModal'
 import { Link } from 'react-router-dom'
 
-export default function CurrentSpots() {
+export default function FavoriteSpot() {
   const history = useHistory()
   const dispatch = useDispatch()
-  const current = useSelector(state => state.spots)
+  const favorites = useSelector(state => state.spots)
   
   
   useEffect(() => {
-    dispatch(currentSpots())
+    dispatch(favoriteSpots())
   }, [dispatch])
 
-  if (!current) return null
+  if (!favorites) return null
   
-  const currentArr = Object.values(current)
+  const currentArr = Object.values(favorites)
   
 
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
@@ -52,5 +52,4 @@ export default function CurrentSpots() {
     </div>
   )
 }
-
 

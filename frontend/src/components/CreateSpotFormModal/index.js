@@ -39,7 +39,7 @@ export default function CreateSpotFormModal() {
     }
     
     const newlyCreatedSpot = dispatch(createSpot(payload))
-      .then((newlyCreatedSpot) => {history.push(`/api/spots/${newlyCreatedSpot.id}`)}, closeModal())
+      .then((newlyCreatedSpot) => {history.push(`/spots/${newlyCreatedSpot.id}`)}, closeModal())
       .catch(
         async(res) => {
           const data = await res.json()
@@ -137,7 +137,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <button className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem', marginTop: 15}} type="submit">Submit your House Listing</button>
+        <button style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 50}} type="submit">Submit your House Listing</button>
           </form>
     </div>
   )

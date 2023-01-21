@@ -8,6 +8,7 @@ const UPDATE_SPOT = 'spots/updateSpot'
 const LOAD_ONESPOT = 'spots/getSpotById'
 const DELETE_SPOT = 'spot/deleteSpot'
 const LOAD_CURRENT = 'spots/current'
+const LOAD_FAVORITES = 'spots/favorites'
 
 
 const load = spot => ({
@@ -40,6 +41,11 @@ const deleteOneSpot = (spot) => ({
     spot
 })
 
+const loadFavorite = spot => ({
+    type: LOAD_FAVORITES,
+    spot
+})
+
 
 
 
@@ -61,6 +67,15 @@ export const currentSpots = () => async dispatch => {
     }
 }
 
+export const favoriteSpots = () => async dispatch => {
+    const response = await csrfFetch('/api/spots/favorites')
+    if (response.ok) {
+        const favoriteSpots = await response.json()
+        dispatch(loadFavorite(favoriteSpots))
+        return favoriteSpots
+    }
+}
+
 export const createSpot = spot => async dispatch => {
     console.log('incoming createSpot variable', spot)
     const response = await csrfFetch('/api/spots', {
@@ -78,7 +93,7 @@ export const createSpot = spot => async dispatch => {
 }
 
 export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
-    const {address, city, country, createdAt, description, id, lat, lng, name, ownerId, price, state, updatedAt} = payload
+    const {address, city, country, createdAt, description, id, lat, lng, name, ownerId, price, state, updatedAt, favorites} = payload
     const response = await csrfFetch(`/api/spots/${payload.id}`, {
         method: 'PUT',
         headers: {
@@ -103,7 +118,8 @@ export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
             ownerId: ownerId,
             price: price, 
             state: state,
-            updatedAt: updatedAt
+            updatedAt: updatedAt,
+            favorites: favorites
         }))
         return spot
     }
@@ -119,7 +135,7 @@ export const getSpotById = id => async dispatch => {
 }
 
 export const deleteSpot = id => async dispatch => {
-    const response = await csrfFetch(`/api/spots/${id}`, {
+    const response = await csrfFetch(`/api/spots/${Number(id)}`, {
         method: 'DELETE',
     })
     
@@ -133,12 +149,7 @@ export const deleteSpot = id => async dispatch => {
 
 
 
-const initialState = {
-    
-}
-
-
-
+const initialState = {}
 
 export default function spotsReducer(state = initialState, action) {
     let newState
@@ -155,18 +166,24 @@ export default function spotsReducer(state = initialState, action) {
                 newState[spot.id] = spot
             })
             return newState
+        case LOAD_FAVORITES: 
+            newState = []
+            action.spot.Spots.forEach(spot => {
+                newState[spot.id] = spot 
+            })
+            return newState
         case CREATE_SPOT: 
             newState = Object.assign({}, state)
             newState[action.spot.id] = action.spot
             return newState
         case UPDATE_SPOT: 
-            console.log(action.spot, 'actionupdateSPot')
+            
             newState = Object.assign({}, state)
             newState[action.spot.id] = action.spot
             return newState
         case LOAD_ONESPOT:
             newState = Object.assign({}, state)
-            newState[action.spot.id] = action.spot
+            newState[action.spot.id]= action.spot
             
             return newState
         case DELETE_SPOT: 

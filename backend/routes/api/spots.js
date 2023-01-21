@@ -177,7 +177,6 @@ router.get('/current', requireAuth, async(req, res, next) => {
                 spot.avgRating = 'No reviews have been posted for this location'
             }
         }
-
         delete spot.Reviews
     } 
 
@@ -208,6 +207,91 @@ router.get('/current', requireAuth, async(req, res, next) => {
         Spots: spotsList
     })
 })
+
+
+//! 3rd React Feature
+//! Get all Spots Favorited by the current User
+router.get('/favorites', requireAuth, async(req, res, next) => {
+    let currentUser = req.user.id
+    let favoriteSpots = await Spot.findAll({
+        where: {
+            ownerId: currentUser,
+            favorites: true
+        },
+        include: [
+            {
+                model: Review
+            },
+            {
+                model: SpotImage
+            }
+        ]
+    })
+
+    let spotsList = []
+    favoriteSpots.forEach((spot) => {
+        spotsList.push(spot.toJSON())
+    })
+    
+
+    for (let spot of spotsList) {
+        const avgRating = await Review.findAll({
+            where: {
+                spotId: spot.id
+            },
+            attributes: [
+                [
+                    sequelize.fn("AVG", sequelize.col("stars")), "avgRating"
+                ]
+            ]
+        })
+
+        let avgList = []
+        avgRating.forEach(avg => {
+            avgList.push(avg.toJSON())
+        })
+
+        for (let avg of avgList) {
+            spot.avgRating = avg.avgRating
+            if (!spot.avgRating) {
+                spot.avgRating = 'No reviews have been posted for this location'
+            }
+        }
+        delete spot.Reviews
+    } 
+
+        //* Handles if current user doesn't own any spots
+    if (!favoriteSpots) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            message2: "You don't currently own any spots",
+            statusCode: 404
+        })
+    }
+
+    spotsList.forEach(spot => {
+        spot.SpotImages.forEach(image => {
+            if (!image.preview) {
+                spot.previewImage = 'no image available'
+            }
+            if (image.preview === true) {
+                spot.previewImage = image.url
+            } 
+        })
+        delete spot.SpotImages
+    })
+
+    res.status(200)
+    return res.json({
+        Spots: spotsList
+    })
+})
+
+// // //! Create a Favorite Spot by the Current User 
+// router.put('/favorites', requireAuth, async (req, res, next) => {
+
+// })
 
 
 //! Get details of a Spot from an id 

@@ -58,6 +58,10 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false
       },
+      favorites: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

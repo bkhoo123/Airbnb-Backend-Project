@@ -50,7 +50,7 @@ export default function LoginFormModal() {
           required
         />
       </label>
-      <button type="submit">Log In</button>
+      <button style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw'}} type="submit">Log In</button>
     </form>
     )
 }

@@ -10,13 +10,13 @@ export default function EditFormModal({spot, spotId}) {
   const history = useHistory()
   
   
-  const [address, setAddress] = useState("")
-  const [city, setCity] = useState("")
-  const [state, setState] = useState("")
-  const [country, setCountry] = useState("")
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [price, setPrice] = useState("")
+  const [address, setAddress] = useState(spot.address)
+  const [city, setCity] = useState(spot.city)
+  const [state, setState] = useState(spot.state)
+  const [country, setCountry] = useState(spot.country)
+  const [name, setName] = useState(spot.name)
+  const [description, setDescription] = useState(spot.description)
+  const [price, setPrice] = useState(spot.price)
   const [previewImage, setPreviewImage] = useState("Must be a image URL")
   const [errors, setErrors] = useState([])
   const { closeModal } = useModal();
@@ -49,13 +49,8 @@ export default function EditFormModal({spot, spotId}) {
     
     const updatedSpot = await dispatch(updateSpot(payload, Owner, SpotImages))
       .then(closeModal)
-      .then(history.push(`/api/spots/${spot.id}`))
-      // .catch(
-      //   async(res) => {
-      //     const data = await res.json()
-      //     if (data && data.errors)  return setErrors(data.errors)
-      //   }
-      // )
+      .then(history.push(`/spots/${spot.id}`))
+
   }
   
   
@@ -147,20 +142,9 @@ export default function EditFormModal({spot, spotId}) {
             required
           />
         </label>
-        <button className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1.25rem', marginTop: 15}} type="submit">Submit Your Location Edits</button>
+        <button className="insidespot-idbuttons" style={{marginTop: 10, width: '15vw'}} type="submit">Submit Your Location Edits</button>
           </form>
     </div>
   )
 }
 
-
-
-// address: address,
-//         city: city,
-//         state: state,
-//         country: country,
-//         lat: lat,
-//         lng: lng,
-//         name: name,
-//         description: description,
-//         price: price

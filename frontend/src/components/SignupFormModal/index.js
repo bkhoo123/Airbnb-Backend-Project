@@ -34,7 +34,7 @@ export default function SignupFormModal() {
 
   return (
     <>
-    <form className="signup-form" onSubmit={handleSubmit}>
+    <form className="signup-formreal" onSubmit={handleSubmit}>
     <ul>
         {console.log('values', values)}
         {(values.map((error, idx) => <li key={idx}>{error}</li>))}
@@ -101,7 +101,7 @@ export default function SignupFormModal() {
           required
         />
       </label>
-      <button type="submit">Sign Up</button>
+      <button className="submit-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw'}} type="submit">Sign Up</button>
     </form>
     </>
   );

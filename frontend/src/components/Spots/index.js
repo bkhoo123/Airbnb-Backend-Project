@@ -19,12 +19,13 @@ export default function Spots() {
 
   const spotsArr = Object.values(spots)
   if (!spots) return null
+  console.log(spots)
 
   return (
     <>
       <div className="spots-container" key={spots.id}>
       {spotsArr.map((spot) => (
-        <Link key={spot.id} className="spot-detailslink" to={`/api/spots/${spot.id}`}>
+        <Link key={spot.id} className="spot-detailslink" to={`/spots/${spot.id}`}>
         <SpotDetails  spots={spot}/>
         </Link>
       ))}

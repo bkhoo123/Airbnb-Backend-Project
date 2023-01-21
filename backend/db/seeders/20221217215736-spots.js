@@ -15,7 +15,7 @@ module.exports = {
     options.tableName = 'Spots'
     await queryInterface.bulkInsert(options, [
       { 
-        ownerId: 1,
+        ownerId: 3,
         address: '27 Joshua Tree',
         city: 'Joshua Tree',
         state: 'California',
@@ -24,7 +24,7 @@ module.exports = {
         lng: -122.49,
         name: 'Josh',
         description: 'Welcome to the greatest place to start achieving your rock climbing Dreams',
-        price: 1250
+        price: 1250,
       },
       {
         ownerId: 2,
@@ -63,7 +63,7 @@ module.exports = {
         price: 1750
       },
       {
-        ownerId: 5,
+        ownerId: 2,
         address: '999 Guitar Way',
         city: "Sindun-Myeon",
         state: 'Incheon-Si',
@@ -84,7 +84,8 @@ module.exports = {
         lng: 75,
         name: 'BigFoot',
         description: "Come to the Icy Thundra and get a chance to possibly see Big Foot. Guaranteed to be -30F' or colder or your money back",
-        price: 123
+        price: 123,
+        favorites: false
       },
       {
         ownerId: 7,
@@ -96,7 +97,8 @@ module.exports = {
         lng: -75,
         name: 'TrueMazeWay',
         description: "Have you ever wanted to live in the rural country side and also go through a maze. This is your chance",
-        price: 150.55
+        price: 150.55,
+        favorites: false
       },
       {
         ownerId: 7,
@@ -108,7 +110,8 @@ module.exports = {
         lng: -21,
         name: 'Breaknam',
         description: 'Come live your dreams next to the great oceans of Mexico',
-        price: 127
+        price: 127,
+        favorites: false
       },
       {
         ownerId: 1, 
@@ -120,10 +123,11 @@ module.exports = {
         lng: -56,
         name: 'Tim and Reuben',
         description: 'The Beach life you have always wanted to live out',
-        price: 177.50
+        price: 177.50,
+        favorites: true
       },
       {
-        ownerId: 2,
+        ownerId: 1,
         address: 'South Lake Tahoe Blvd',
         city: 'South Lake Tahoe',
         state: 'California',
@@ -132,10 +136,11 @@ module.exports = {
         lng: 55,
         name: "Mike Tyson",
         description: 'Enjoy the great views and the Lake and the snow',
-        price: 1002
+        price: 1002,
+        favorites: true
       },
       {
-        ownerId: 3,
+        ownerId: 1,
         address: 'Forest of Death',
         city: 'Kyoto',
         state: 'Kyoto Fu',
@@ -144,10 +149,11 @@ module.exports = {
         lng: 172,
         name: 'Samurai',
         description: 'Live with one with the forest',
-        price: 1777
+        price: 1777,
+        favorites: true
       },
       {
-        ownerId: 4,
+        ownerId: 1,
         address: '3817 Caledonia Bay Lookout',
         city: 'Pacific Grove',
         state: 'California',
@@ -156,7 +162,8 @@ module.exports = {
         lng: -51,
         name: "True Home",
         description: 'Dream Home',
-        price: 122
+        price: 122,
+        favorites: true
       }
     ], {})
   },
