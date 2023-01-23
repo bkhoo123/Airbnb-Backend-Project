@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { updateSpot } from '../../store/spots'
 
@@ -24,6 +24,6 @@ export default function SpotDetails({id, spots}) {
         <p><span className="dollar">${spots.price}</span> night</p>
         <button  className="heart"><i id="heart-icon" class="fa-solid fa-heart"></i></button>
     </div>
-    
   )
 }
+

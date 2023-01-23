@@ -29,14 +29,17 @@ const SpotById = () => {
     count += Number(review.stars)
   })
 
+  const getPokemon = fetch
+  context
+
+  
+
   useEffect(() => {
     dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
     setAverage(count / reviewArr.length)
   }, [dispatch, spotId, count])
   
-  
-
   
   if (!spot) return null
   if (!user) return null

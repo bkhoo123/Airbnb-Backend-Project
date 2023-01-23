@@ -119,7 +119,6 @@ export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
             price: price, 
             state: state,
             updatedAt: updatedAt,
-            favorites: favorites
         }))
         return spot
     }

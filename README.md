@@ -19,6 +19,12 @@ The technologies I used to accomplish this for the backend are:
 4. SQL Database Management
 5. Javascript
 
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white) ![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=Sequelize&logoColor=white)
+
+![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=Sequelize&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![Redux](https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white) ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)
+
 The 2 Features that have been completed are 
 Spots
 -Create
@@ -30,6 +36,29 @@ Reviews
 -Create
 -Read
 -Delete
+
+# Screenshots of pages
+
+Home Page
+![home-page]
+
+[home-page]: ./images/home.png
+
+
+# Spot details
+![spot-details]
+
+[spot-details]: ./images/spotdetails.png
+
+# Reviews
+![reviews]
+
+[reviews]: ./images/review.png
+
+# Current Users Listings
+![current-users-listings]
+
+[currentuser]: ./images/currentuser.png
 
 # `Airbnb Clone`
 
