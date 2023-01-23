@@ -22,8 +22,8 @@ export default function CurrentSpots() {
   
   const currentArr = Object.values(current)
 
-  const handleDelete =  () => {
-    dispatch(deleteSpot(Number(spot.id)))
+  const handleDelete = async () => {
+    await dispatch(deleteSpot(Number))
   }
   
 
@@ -49,7 +49,7 @@ export default function CurrentSpots() {
         buttonText="Edit Location"
         modalComponent={<EditFormModal  spot={spot}/>}
         />
-        <button onClick={handleDelete}  className="insidespot-idbuttons">Delete Location</button>
+        <button onClick={() => dispatch(deleteSpot(Number(spot.id)))}  className="insidespot-idbuttons">Delete Location</button>
         </span> 
         </div>
       ))}  
