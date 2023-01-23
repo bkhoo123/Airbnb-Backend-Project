@@ -22,8 +22,8 @@ export default function CurrentSpots() {
   
   const currentArr = Object.values(current)
 
-  const handleDelete = async () => {
-    await dispatch(deleteSpot(Number(spot.id)))
+  const handleDelete =  () => {
+    dispatch(deleteSpot(Number(spot.id)))
   }
   
 
