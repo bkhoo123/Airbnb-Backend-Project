@@ -29,11 +29,6 @@ const SpotById = () => {
     count += Number(review.stars)
   })
 
-  const getPokemon = fetch
-  context
-
-  
-
   useEffect(() => {
     dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
