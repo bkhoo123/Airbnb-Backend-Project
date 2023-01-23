@@ -21,6 +21,10 @@ export default function CurrentSpots() {
   if (!current) return null
   
   const currentArr = Object.values(current)
+
+  const handleDelete = async () => {
+    await dispatch(deleteSpot(Number(spot.id)))
+  }
   
 
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
@@ -45,7 +49,7 @@ export default function CurrentSpots() {
         buttonText="Edit Location"
         modalComponent={<EditFormModal  spot={spot}/>}
         />
-        <button onClick={() => dispatch(deleteSpot(Number(spot.id)))}  className="insidespot-idbuttons">Delete Location</button>
+        <button onClick={handleDelete}  className="insidespot-idbuttons">Delete Location</button>
         </span> 
         </div>
       ))}  
