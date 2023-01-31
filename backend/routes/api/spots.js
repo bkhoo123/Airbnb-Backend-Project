@@ -394,6 +394,8 @@ router.get('/:spotId', async (req, res, next) => {
 router.post('/', requireAuth, async (req, res, next) => {
     const {address, city, state, country, lat, lng, name, description, price} = req.body
 
+    const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']
+
     //* Address validation error
     if (!address) {
         res.status(400)
@@ -868,7 +870,7 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     if (!review) {
         res.status(400)
         return res.json({
-            message: "Validation error",
+            message: "Review Text is required",
             statusCode: 400,
             errors: {
                 review: "Review Text is required"
@@ -880,7 +882,7 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     if (stars < 1 || stars > 5) {
         res.status(400)
         return res.json({
-            message: "Validation error",
+            message: "Review stars must be an integer from 1 to 5",
             statusCode: 400,
             errors: {
                 stars: "Stars must be an integer from 1 to 5"
