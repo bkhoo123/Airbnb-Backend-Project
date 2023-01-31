@@ -70,20 +70,16 @@ export default function ProfileButton({user}) {
             <li>Username: {user.username}</li>
             <li>Name: {user.firstName} {user.lastName}</li>
             <li>Email: {user.email}</li>
-            <li className="logout-list">
-              <button className="logout-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '15vw', marginTop: 10, cursor: 'pointer'}} onClick={logout}>Log Out</button>
-            </li>
-            <li className="logout-list">
-              <button className="logout-button"  onClick={() => handleCurrent()} style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 50, width: '15vw', cursor: 'pointer'}}>My Hosted Locations</button>
-            </li>
-            <li className="logout-button">
-                <button onClick={() => handleFavorite()} className="logout-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw', cursor: 'pointer'}}>Favorites</button>
-            </li>
+            <div className="session-buttons">
+              <button className="logout-button" style={{fontFamily: 'Montserrat', fontSize: '0.95rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: 200, marginTop: 10, cursor: 'pointer'}} onClick={logout}>Log Out</button>
+              <button className="logout-button"  onClick={() => handleCurrent()}>My Hosted Locations</button>
+              <button onClick={() => handleFavorite()} className="logout-button">Favorites</button>
+            </div>
           </>
         ) : (
           <>
             <div style={{display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
-            <div style={{fontFamily: 'Montserrat', fontSize: '1rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '10vw', marginTop: 10, cursor: 'pointer'}}>
+            <div style={{fontFamily: 'Montserrat', fontSize: '0.9rem', color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: '10vw', marginTop: 10, cursor: 'pointer'}}>
               <OpenModalButton
                 buttonText="Sign Up"
                 onButtonClick={closeMenu}

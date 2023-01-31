@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import logo from '../Images/logo.jpg'
-import CreateSpot from '../Spots/CreateSpot';
+
 import OpenModalButton from '../OpenModalButton';
 import CreateSpotFormModal from '../CreateSpotFormModal';
 import Tyler from '../Images/Tyler.jpg'
@@ -11,7 +11,7 @@ import Tyler from '../Images/Tyler.jpg'
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
   
-  const url = '/api/spots/'
+  
 
   return (
     <div className="nav-bar">
@@ -31,6 +31,7 @@ function Navigation({ isLoaded }){
         </span>
       )}
     </div>
+    
   );
 }
 

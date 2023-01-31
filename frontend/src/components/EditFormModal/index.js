@@ -17,21 +17,40 @@ export default function EditFormModal({spot, spotId}) {
   const [name, setName] = useState(spot.name)
   const [description, setDescription] = useState(spot.description)
   const [price, setPrice] = useState(spot.price)
-  const [previewImage, setPreviewImage] = useState("Must be a image URL")
+  // const [previewImage, setPreviewImage] = useState("Must be a image URL")
   const [errors, setErrors] = useState([])
   const { closeModal } = useModal();
 
-  
   const Owner = spot.Owner
-  
   const SpotImages = spot.SpotImages
+
+  useEffect(() => {
+    const errors = [
+      "Street Address is required",
+      "City is required",
+      "State is required",
+      "Country is required",
+      "Name is required and must be less than 50 characters",
+      "Description is required",
+      "Price must be an integer and is also required and cannot be below 0"
+    ]
+
+    if (address.length > 0) errors.splice(errors.indexOf("Street Address is required"), 1)
+    if (city.length > 0) errors.splice(errors.indexOf("City is required"), 1)
+    if (state.length > 0) errors.splice(errors.indexOf("State is required"), 1)
+    if (country.length > 0) errors.splice(errors.indexOf("Country is required"), 1)
+    if (name.length < 50 && name.length > 0) errors.splice(errors.indexOf("Name is required and must be less than 50 characters"), 1)
+    if (description.length > 0) errors.splice(errors.indexOf("Description is required"), 1)
+    if (price > 0) errors.splice(errors.indexOf("Price must be an integer and is also required and cannot be below 0"), 1)
+
+    setErrors(errors)
+  }, [address, city, state, country, name, description, price])
   
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setErrors([])
-    let lat = 50
-    let lng = 50
+    let lat = 0
+    let lng = 0
 
     
     const payload = {
@@ -46,6 +65,7 @@ export default function EditFormModal({spot, spotId}) {
         description,
         price
     }
+
     
     const updatedSpot = await dispatch(updateSpot(payload, Owner, SpotImages))
       .then(closeModal)
@@ -56,7 +76,7 @@ export default function EditFormModal({spot, spotId}) {
   
   return (
     <div className="signup-form">
-      <h3>Edit Your Location</h3>
+      <h3>Edit Your Spot</h3>
       <ul>
         {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
       </ul>
@@ -122,7 +142,7 @@ export default function EditFormModal({spot, spotId}) {
             required
           />
         </label>
-        <label>
+        {/* <label>
           PreviewImage
           <input
             className="signup-input"
@@ -131,7 +151,7 @@ export default function EditFormModal({spot, spotId}) {
             onChange={(e) => setPreviewImage(e.target.value)}
             required
           />
-        </label>
+        </label> */}
         <label>
           Price
           <input
@@ -142,7 +162,7 @@ export default function EditFormModal({spot, spotId}) {
             required
           />
         </label>
-        <button className="insidespot-idbuttons" style={{marginTop: 10, width: '15vw'}} type="submit">Submit Your Location Edits</button>
+        <button disabled={errors.length ? true : false} className="insidespot-idbuttons" style={{marginTop: 10, width: '15vw'}} type="submit">Submit Your Location Edits</button>
           </form>
     </div>
   )

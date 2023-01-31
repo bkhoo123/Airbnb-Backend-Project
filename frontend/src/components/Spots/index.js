@@ -19,7 +19,7 @@ export default function Spots() {
 
   const spotsArr = Object.values(spots)
   if (!spots) return null
-  console.log(spots)
+  
 
   return (
     <>

@@ -9,51 +9,65 @@ const LOAD_ONESPOT = 'spots/getSpotById'
 const DELETE_SPOT = 'spot/deleteSpot'
 const LOAD_CURRENT = 'spots/current'
 const LOAD_FAVORITES = 'spots/favorites'
+const CREATE_PREVIEWIMAGE = 'spots/postPreviewImage'
+const CREATE_SPOTIMAGE = 'spots/postSpotImage'
 
 
-const load = spot => ({
+const actionLoad = spot => ({
     type: LOAD_SPOTS,
     spot
 })
 
-const loadCurrent = spot => ({
+const actionLoadCurrent = spot => ({
     type: LOAD_CURRENT,
     spot
 })
 
-const createOneSpot = spot => ({
+const actionCreateOneSpot = spot => ({
     type: CREATE_SPOT,
     spot
 })
 
-const updateOneSpot = spot => ({
+const actionUpdateOneSpot = spot => ({
     type: UPDATE_SPOT,
     spot,
 })
 
-const getOneSpot = spot => ({
+const actionGetOneSpot = spot => ({
     type: LOAD_ONESPOT,
     spot
 })
 
-const deleteOneSpot = (spot) => ({
+const actionDeleteOneSpot = (spot) => ({
     type: DELETE_SPOT,
     spot
 })
 
-const loadFavorite = spot => ({
+const actionLoadFavorite = spot => ({
     type: LOAD_FAVORITES,
     spot
 })
 
+const actionCreatePreviewImage = (spotId, url, preview) => ({
+    type: CREATE_PREVIEWIMAGE,
+    spotId,
+    url,
+    preview
+})
 
+const actionCreateSpotImage = (spotId, url, preview) => ({
+    type: CREATE_SPOTIMAGE,
+    spotId,
+    url,
+    preview
+})
 
 
 export const getSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots')
     if (response.ok) {
         const spots = await response.json()
-        dispatch(load(spots))
+        dispatch(actionLoad(spots))
         return spots
     }
 }
@@ -62,7 +76,7 @@ export const currentSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots/current')
     if (response.ok) {
         const currentSpots = await response.json()
-        dispatch(loadCurrent(currentSpots))
+        dispatch(actionLoadCurrent(currentSpots))
         return currentSpots
     }
 }
@@ -71,13 +85,12 @@ export const favoriteSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots/favorites')
     if (response.ok) {
         const favoriteSpots = await response.json()
-        dispatch(loadFavorite(favoriteSpots))
+        dispatch(actionLoadFavorite(favoriteSpots))
         return favoriteSpots
     }
 }
 
 export const createSpot = spot => async dispatch => {
-    console.log('incoming createSpot variable', spot)
     const response = await csrfFetch('/api/spots', {
         method: 'POST',
         headers: {
@@ -87,7 +100,7 @@ export const createSpot = spot => async dispatch => {
     })
     if (response.ok) {
         const spot = await response.json()
-        dispatch(createOneSpot(spot))
+        dispatch(actionCreateOneSpot(spot))
         return spot
     }
 }
@@ -103,7 +116,7 @@ export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
     })
     if (response.ok) {
         const spot = await response.json()
-        dispatch(updateOneSpot({
+        dispatch(actionUpdateOneSpot({
             Owner: Owner,
             SpotImages: SpotImages,
             address: address,
@@ -128,7 +141,7 @@ export const getSpotById = id => async dispatch => {
     const response = await csrfFetch(`/api/spots/${id}`)
     if (response.ok) {
         const spot = await response.json()
-        dispatch(getOneSpot(spot))
+        dispatch(actionGetOneSpot(spot))
         return spot
     }
 }
@@ -140,9 +153,45 @@ export const deleteSpot = id => async dispatch => {
     
     if (response.ok) {
         const deletedSpot = await response.json()
-        dispatch(deleteOneSpot(id))
+        dispatch(actionDeleteOneSpot(id))
         
         return deletedSpot
+    }
+}
+
+export const createPreviewImage = (spotId, url, preview) => async dispatch => {
+    const response = await csrfFetch(`/api/spots/${spotId}/images`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            url,
+            preview
+        })
+    })
+    if (response.ok) {
+        const {spotId, url, preview} = await (response.json())
+        dispatch(actionCreatePreviewImage(+spotId, url, preview))
+        return spotId
+    }
+}
+
+export const createSpotImage = (spotId, url, preview) => async dispatch => {
+    const response = await csrfFetch(`/api/spots/${spotId}/images`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            url, 
+            preview
+        })
+    })
+    if (response.ok) {
+        const {spotId, url, preview} = await (response.json())
+        dispatch(actionCreateSpotImage(+spotId, url, preview))
+        return spotId
     }
 }
 
@@ -183,13 +232,19 @@ export default function spotsReducer(state = initialState, action) {
         case LOAD_ONESPOT:
             newState = Object.assign({}, state)
             newState[action.spot.id]= action.spot
-            
             return newState
         case DELETE_SPOT: 
             newState = Object.assign({}, state)
             delete newState[action.spot]
             return newState
-        
+        case CREATE_PREVIEWIMAGE: 
+            newState = Object.assign({}, state)
+            newState = {...state, [action.spotId.previewImage]: action.url}
+            return newState
+        case CREATE_SPOTIMAGE:
+            newState = Object.assign({}, state)
+            newState = {...state, [action.spotId.SpotImages]: [action.spotId.SpotImages].push(action.url)}
+            return newState
     default: 
         return state 
     }

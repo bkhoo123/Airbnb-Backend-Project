@@ -22,9 +22,7 @@ export default function CurrentSpots() {
   
   const currentArr = Object.values(current)
 
-  const handleDelete = async () => {
-    await dispatch(deleteSpot(Number))
-  }
+
   
 
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
@@ -33,8 +31,7 @@ export default function CurrentSpots() {
     <div className="currentspots">
       {currentArr.map((spot, index) => (
         <div className="spot-info">
-        <h2>{title[spot.id - 1]}</h2>
-        
+        <h2>Location #{index+1}</h2> 
         
         <Link key={spot.id} to={`/spots/${spot.id}`}>  
         <img className="currentspot-images" src={spot.previewImage ? spot.previewImage : "https://a0.muscache.com/im/pictures/miso/Hosting-770519476322190230/original/fba61625-7eb9-4c25-8c64-953749548e6a.jpeg?im_w=1200"} alt="No Preview Image Available"  />

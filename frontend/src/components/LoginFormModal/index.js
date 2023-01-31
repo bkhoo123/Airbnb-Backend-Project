@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import * as sessionActions from '../../store/session';
 import { useDispatch} from 'react-redux';
 import { useModal } from "../../context/Modal";
+import OpenModalButton from '../OpenModalButton';
+import SignupFormModal from '../SignupFormModal';
 
 
 export default function LoginFormModal() {
@@ -30,6 +32,7 @@ export default function LoginFormModal() {
       <ul>
         {errors.map((error, idx) => <li key={idx}>{error}</li>)}
       </ul>
+      <h1>Log In</h1>
       <label className="login-label">
         Username or Email:
         <input
@@ -50,7 +53,13 @@ export default function LoginFormModal() {
           required
         />
       </label>
-      <button style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw'}} type="submit">Log In</button>
+      <button style={{fontFamily: 'Helvetica', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 35, width: 150, fontWeight: 'bold', cursor: 'pointer'}} type="submit">Log In</button>
+      <div>
+        <OpenModalButton
+          buttonText="Sign Up"
+          modalComponent={<SignupFormModal/>}
+        />
+      </div>
     </form>
     )
 }
