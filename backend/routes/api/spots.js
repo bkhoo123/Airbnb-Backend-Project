@@ -967,7 +967,7 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
     if (currentUser !== spotUserJson.ownerId) {
         bookList.forEach((book) => {
             delete book.User
-            delete book.id
+            // delete book.id
             delete book.userId
             delete book.createdAt
             delete book.updatedAt
@@ -976,7 +976,8 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
         return res.json({
             Bookings: bookList
       }) //! Confirmed working
-    } else if (currentUser === spotUserJson.ownerId) {
+    } 
+    if (currentUser === spotUserJson.ownerId) {
         res.status(200)
         bookList.forEach((book) => {
             const {User, id, userId, startDate, endDate, createdAt, updatedAt} = book

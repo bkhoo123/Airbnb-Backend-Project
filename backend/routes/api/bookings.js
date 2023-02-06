@@ -231,15 +231,15 @@ router.delete('/:bookingId', requireAuth, async (req, res, next) => {
         })
     }
 
-    //* Error response with status 400 is given when it is past the booking's startDate (no deleting of current or past bookings)
-    //! Confirmed Functioning
-    if (new Date(startDate).getTime() <= new Date().getTime()) {
-        res.status(400)
-        return res.json({
-            message: "No deleting of current or past bookings",
-            statusCode: 400
-        })
-    }
+    // //* Error response with status 400 is given when it is past the booking's startDate (no deleting of current or past bookings)
+    // //! Confirmed Functioning
+    // if (new Date(startDate).getTime() <= new Date().getTime()) {
+    //     res.status(400)
+    //     return res.json({
+    //         message: "No deleting of current or past bookings",
+    //         statusCode: 400
+    //     })
+    // }
     
 
     //* Delete book if none of the errors above get hit 
