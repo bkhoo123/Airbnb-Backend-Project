@@ -11,10 +11,7 @@ export default function OpenModalButton({modalComponent, buttonText, onButtonCli
   };
 
   return (
-    <button className="insidespot-idbuttons"  onClick={onClick}>{buttonText}</button>
+    <button className="insidespot-idbuttons" id="yes" onClick={onClick}>{buttonText}</button>
   )
 }
 
-// font-family: georgia;
-//     color: #8f8f8f;
-//     font-size: 1rem;

@@ -2,8 +2,7 @@ import React from 'react'
 import { useParams, Link, Redirect } from 'react-router-dom'
 import {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSpotById } from '../../store/spots'
-import * as sessionActions from "../../store/session"
+import { thunkGetFavoriteSpots, getSpotById } from '../../store/spots'
 import { deleteSpot } from '../../store/spots'
 import { useHistory } from 'react-router-dom'
 import OpenModalButton from '../OpenModalButton'
@@ -12,36 +11,63 @@ import { getSpotReviews } from '../../store/reviews'
 import ReviewFormModal from '../Reviews/ReviewFormModal'
 import { deleteSpotReview } from '../../store/reviews'
 import { getSpots } from '../../store/spots'
-import FavoriteFormModal from '../FavoriteFormModal'
+import CreateBooking from '../Bookings/CreateBooking'
+import { thunkGetAllBookings } from '../../store/bookings'
+import EditModalButton from '../OpenModalButton/EditReview'
+import EditReview from '../Reviews/EditReview'
+import { updateSpot } from '../../store/spots'
+import { thunkDeleteSpotFavorite } from '../../store/favorites'
+import { thunkCreateSpotFavorite } from '../../store/favorites'
+import { thunkCurrentFavoriteSpots } from '../../store/favorites'
+
 
 const SpotById = () => {
+  const [favoriteChange, setFavoriteChange] = useState("spotid-favorite")
   const history = useHistory()
   const {spotId} = useParams()
   const dispatch = useDispatch()
-  const spot = useSelector(state => state.spots[spotId])
+  const spot = useSelector(state => state.spots.singleSpot)
   const user = useSelector(state => state.session.user)
   const review = useSelector(state => state.reviews)
+  const favorites = useSelector(state => state.favorites)
   const [average, setAverage] = useState(0)
   const reviewArr = Object.values(review)
+  const bookings = useSelector(state => state.bookings.bookingsById)
 
   let count = 0 
   reviewArr.forEach((review) => {
     count += Number(review.stars)
   })
 
+  const favoritesArray = []
+  Object.values(favorites).forEach(favorite => {
+    favoritesArray.push(favorite.spotId)
+  })
+
+  
   useEffect(() => {
     dispatch(getSpotReviews(spotId))
     dispatch(getSpotById(spotId))
+    dispatch(thunkGetAllBookings(spotId))
+    dispatch(thunkCurrentFavoriteSpots())
+
+    const find = favoritesArray.find(favorite => {
+      return Number(favorite) === Number(spotId)
+    })
+
+    if (find) setFavoriteChange("spotid-favoriteclicked")
+    if (!find) setFavoriteChange("spotid-favorite")
+    
     setAverage(count / reviewArr.length)
-  }, [dispatch, spotId, count])
-  
-  const stars = <i style={{color: 'gold'}} className="fa-solid fa-star"></i>
+  }, [dispatch, spotId, count, favoriteChange])
+
   
   if (!spot) return null
   if (!user) return null
   if (!spot.SpotImages) return null
   if (!review) return null
   if (!reviewArr) return null 
+  if (!bookings) return null
   
   //! Detail Arrays
   let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
@@ -55,34 +81,50 @@ const SpotById = () => {
       history.push(`/`)
   }
 
-  
+  const handleClickFavorite = async (e) => {
+    e.preventDefault()
+    const payload = {
+      id: Number(spotId),
+      userId: user.id
+    }
+
+    const find = Object.values(favorites).find(favorite => {
+      return Number(favorite.spotId) === Number(spotId)
+    })
+
+    if (favoriteChange === 'spotid-favorite') {
+      const newFavorite = await dispatch(thunkCreateSpotFavorite(payload))
+      setFavoriteChange("spotid-favoriteclicked")
+    } else if (find) {
+      const deleteFavorite = await dispatch(thunkDeleteSpotFavorite(find.id))
+      setFavoriteChange("spotid-favorite")
+    }
+  }
+
+
   
   return (
     <>
-    <h1>
-      {title[spotId - 1]} 
-     {/* <span style={{marginLeft: 10}}> 
-     
-      <OpenModalButton
-      buttonText={<i id="spotid-favorite" class="fa-solid fa-heart"></i>}
-      modalComponent={<FavoriteFormModal spotId={spotId} spot={spot}/>}
-      />
-      </span> */}
-    </h1>
+    {/* Headers / Images / Review Count / Address / Favorites */}
+    <h2>
+    {title[spotId - 1] ? title[spotId - 1] : "Greatest Place Ever to Live"} 
+      <button onClick={handleClickFavorite} style={{borderStyle: 'none', background: 'none', marginLeft: 5}}><i id={favoriteChange} class="fa-solid fa-heart"></i></button>
+    </h2>
     
-    <span style={{fontSize: 20}}><i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} 
+    <span style={{fontSize: 20}}><i style={{color: 'black', marginRight: 5}} className="fa-solid fa-star"></i> 
+    {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} 
     <span> {spot?.numReviews} Reviews </span>
-    
-    <span style={({textDecoration: "underline"})}>{spot.address}, {spot.city} {spot.state} {spot.country}</span></span>
+    <span style={({textDecoration: "underline"})}>{spot.address}, {spot.city} {spot.state} {spot.country}</span>
+    </span>
 
     <span className="spotid-buttons">
       <div id={user.id === spot.ownerId ? "" : "delete-hidden"}>
         <OpenModalButton
         buttonText="Edit Location"
-        
         modalComponent={<EditFormModal spotId={spotId} spot={spot}/>}
         />
       </div>
+
       <button id={user.id === spot.ownerId ? "" : "delete-hidden"} className="deletespot-button" onClick={handleClickDelete} >Delete Location</button>
       </span>
       
@@ -108,24 +150,35 @@ const SpotById = () => {
       </div>
       )}
     
+
+    {/* Hosted By / Booking Buttons */}
     <div>
-    <h2>Hosted By: {spot.name}</h2>
-    <h2>Price Per Night: ${spot.price}</h2>
+      <h2 className="bookings-buttons">Hosted By: {spot.name} 
+        <span className="real-buttons">
+            <OpenModalButton
+            buttonText="Bookings / Reserve Spot"
+            modalComponent={<CreateBooking userId={user.id} spotOwnerId={spot.ownerId} bookings={bookings} spotId={spotId} />}
+            />
+        </span>
+      </h2>
     </div>
+
+    <h2>Price Per Night: ${spot.price}</h2>
+    
     <div className="spot-bottomcontainer">
-    <div>5 guests 1 bedroom 1 bed 1 bath</div>
+    <div>5 guests · 1 bedroom · 1 bed · 1 bath</div>
     <div style={{marginTop: 10}}>{spot.description}</div>
     </div>
     
-      <hr />
+    {/* Reviews */}
       <div style={{marginTop: 15}} className="spotreview-container">
-      
-      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} · {spot?.numReviews} Reviews <span style={{paddingLeft: 10}}>
+      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} · {spot?.numReviews} Reviews 
+      <span style={{paddingLeft: 10}}>
         <OpenModalButton
         onButtonClick={() => {spot.numReviews += 1}}
         buttonText="Post Review"
         modalComponent={<ReviewFormModal reviewArr={reviewArr} spotId={spotId} userId={user.id}/>}
-        />
+        />      
       </span>
       </span>
       <div>
@@ -133,12 +186,19 @@ const SpotById = () => {
           <>
           <hr />
           <h3 style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}> <i style={{marginRight: 10}} class="fa-solid fa-user"></i> {review.User?.firstName} {review.User?.lastName} 
+          {review.User.id === user.id && (
+            <span style={{marginLeft: 15}}>
+            <EditModalButton
+            buttonText= <i style={{fontSize: 18, color: "#FF5A5F"}}  class="fa-solid fa-pen-to-square"></i>
+            modalComponent={<EditReview reviewArr={reviewArr} reviewId={review.id} spotId={spotId} userId={user.id}/>}
+            />
+          </span>
+          )}
           {review.User.id === user.id && (<button className="review-delete" 
-          onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/spots/${Number(spotId)}`)).then(spot.numReviews -=1)}><i style={{fontSize: 18, color: "#FF5A5F" }} class="fa-solid fa-trash-can"></i></button>)}
+          onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/spots/${Number(spotId)}`)).then(spot.numReviews -=1)}><i style={{fontSize: 18, color: "#FF5A5F", cursor: 'pointer' }} class="fa-solid fa-trash-can"></i></button>)}
           </h3>
-          <h3 className="user-review">{review.review}</h3>
+          <h3 style={{color: 'gray', fontSize: '1rem'}} className="user-review">{review.review}</h3>
           <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt.split("T")[0]}</span>
-          <hr />
           </>
         ))}
       </div>
@@ -146,5 +206,5 @@ const SpotById = () => {
     </>
   ) 
 }
-// const reviewArray = reviewArr[0].Reviews
+
 export default SpotById

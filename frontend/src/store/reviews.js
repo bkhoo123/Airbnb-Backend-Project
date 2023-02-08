@@ -1,22 +1,28 @@
 import {csrfFetch} from './csrf'
 
-const READ_SPOTREVIEWS = 'spots/getSpotReviews'
-const CREATE_SPOTREVIEW = 'spots/createSpotReview'
-const DELETE_SPOTREVIEW = 'spots/deleteSpotReview'
+const READ_SPOTREVIEWS = 'reviews/getSpotReviews'
+const CREATE_SPOTREVIEW = 'review/createSpotReview'
+const DELETE_SPOTREVIEW = 'review/deleteSpotReview'
+const EDIT_SPOTREVIEW = 'review/editSpotReview'
 
-const loadSpotReview = review => ({
+const actionLoadSpotReview = review => ({
     type: READ_SPOTREVIEWS,
     review
 })
 
-const createReview = spot => ({
+const actionCreateReview = review => ({
     type: CREATE_SPOTREVIEW,
-    spot
+    review
 })
 
-const deleteReview = spot => ({
+const actionDeleteReview = review => ({
     type: DELETE_SPOTREVIEW,
-    spot
+    review
+})
+
+const actionEditReview = review => ({
+    type: EDIT_SPOTREVIEW,
+    review
 })
 
 
@@ -24,7 +30,7 @@ export const getSpotReviews = id => async dispatch => {
     const response = await csrfFetch(`/api/spots/${id}/reviews`)
     if (response.ok) {
         const spotReviews = await response.json()
-        dispatch(loadSpotReview(spotReviews))
+        dispatch(actionLoadSpotReview(spotReviews))
         return spotReviews
     }
 }
@@ -39,8 +45,23 @@ export const createSpotReview = spot => async dispatch => {
     })
     if (response.ok) {
         const spotReview = await response.json()
-        dispatch(createReview(spotReview))
+        dispatch(actionCreateReview(spotReview))
         return spotReview
+    }
+}
+
+export const thunkEditSpotReview = review => async dispatch => {
+    const response = await csrfFetch(`/api/reviews/${review.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(review)
+    })
+    if (response.ok) {
+        const editReview = await response.json()
+        dispatch(actionEditReview(editReview))
+        return editReview
     }
 }
 
@@ -50,7 +71,7 @@ export const deleteSpotReview = id => async dispatch => {
     })
     if (response.ok) {
         const deletedReview = await response.json()
-        dispatch(deleteReview(id))
+        dispatch(actionDeleteReview(id))
         return deletedReview
     }
 }
@@ -68,12 +89,17 @@ export default function reviewsReducer(state = initialState, action) {
             return newState
         case CREATE_SPOTREVIEW:
             newState = Object.assign({}, state)
-            newState[action.spot.id] = action.spot
-            newState[action.spot.id].User = {id: action.spot.userId} 
+            newState[action.review.id] = action.review
+            newState[action.review.id].User = {id: action.review.userId} 
+            return newState
+        case EDIT_SPOTREVIEW: 
+            newState = Object.assign({}, state) 
+            newState[action.review.id] = action.review
+            newState[action.review.id].User = {id: action.review.userId} 
             return newState
         case DELETE_SPOTREVIEW:
             newState = Object.assign({}, state)
-            delete newState[action.spot]
+            delete newState[action.review]
             return newState
     default:
         return state

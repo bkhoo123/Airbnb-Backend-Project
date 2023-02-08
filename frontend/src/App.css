@@ -29,6 +29,12 @@ input {
     margin-top: 1%;
 }
 
+.booking-modalcontainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 
 
 /*! Login */
@@ -46,6 +52,7 @@ input {
     background: linear-gradient(to right,  #7F7FD5, #91EAE4);
     border-radius: 2%;
 }
+
 
 /* .logout-button {
     font-family: 'Montserrat';
@@ -112,6 +119,18 @@ input {
     margin: 0;
     background: linear-gradient(to right,  #7F7FD5, #91EAE4);
     border-radius: 2%;
+}
+
+.bookings-form {
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    align-items: center;
+    height: 1200px;
+    width: 800px;
+    background: linear-gradient(to right, #CCFBFF, #EF96C5);
+    border-radius: 3%;
+    
 }
 
 .signup-formreal {
@@ -298,7 +317,12 @@ input {
     position: absolute;
     background-color:white;
     border-radius: 3%;
-    
+}
+
+.delete-bookingcontent {
+    height: 500px;
+    width: 600px;
+    text-align: center;
 }
 
 /*! Spots */
@@ -323,7 +347,7 @@ input {
 }
 
 .currentspot-images {
-    width: 500px;
+    width: 540px;
     height: 350px;
     border-radius: 3%;
 }
@@ -333,15 +357,19 @@ input {
     gap: 15px;
     flex-direction: row;
     flex-wrap: wrap;
-
 }
 
-.spot-info {
-    /* display: flex;
-    flex-wrap: wrap;
+.bookings {
+    display: flex;
+    gap: 50px;
     flex-direction: row;
-    justify-content: center;
-    align-items: center; */
+    flex-wrap: wrap;
+}
+
+.currentbooking-images {
+    height: 150px;
+    width: 150px;
+    border-radius: 3%;
 }
 
 .front-spottext {
@@ -352,9 +380,28 @@ input {
    color: white; 
 }
 
+#heart-icon-clicked {
+    color: #ff5a5f
+}
+
 #heart-icon:hover {
     color: #ff5a5f;
 }
+
+#heart-icon-clicked:hover {
+    color: white;
+}
+
+#hearty {
+    color:#ff5a5f
+}
+
+#hearty:hover {
+    color: gray;
+}
+
+
+
 
 .currentbuttons {
     display: flex;
@@ -366,13 +413,14 @@ input {
 
 .heart {
     position: relative;
-    bottom: 28.5vh;
-    left: 18.5vw;
+    bottom: 313px;
+    left: 230px;
     opacity: 1;
     border-style: none;
     background-color: opaque;
     background: none;
     font-size: 1rem;
+
 }
 
 .heartspotid {
@@ -454,11 +502,26 @@ input {
     background-color: #FF5A5F;
     border-style: none;
     border-radius: 4%;
-    height: 50px;
-    width: 150px;
+    height: 45px;
+    width: 130px;
     font-family: Helvetica;
     color: white;
     cursor: pointer;
+}
+
+.delete-bookingbuttons {
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #FF5A5F;
+    height: 40px;
+    width: 80px;
+    border-style: none;
+    color: white;
+    border-radius: 5%;
+}
+
+.delete-bookingbuttons:hover {
+    background-color: gray;
 }
 
 .insidespot-idbuttons:hover {
@@ -478,8 +541,8 @@ input {
     font-size: 1rem;
     cursor: pointer;
     color: white;
-    border-radius: 8%;
-    width: 15%
+    border-radius: 3%;
+    width: 150px
 }
 
 .deletespot-button:hover {
@@ -499,16 +562,29 @@ input {
 }
 
 #spotid-favorite {
-    color: white;
-    font-size: 1.75rem;
+    color: gray;
+    font-size: 1.5rem;
+}
+
+#spotid-favoriteclicked {
+    color: #FF5A5F;
+    font-size: 1.5rem;
+}
+
+
+#spotid-favoriteclicked:hover {
+    color: gray;
+    font-size: 1.5rem;
 }
 
 #spotid-favorite:hover {
-    color: #FF5A5F
+    color: #FF5A5F;
 }
 
+
+
 .review-delete {
-    margin-left: 15px;
+    margin-left: 5px;
     border-style: none;
     background-color: white;
 }
@@ -516,3 +592,52 @@ input {
 .review-delete:hover {
     background-color: lightgray;
 }
+
+.edit-reviewbutton {
+    border-style: none;
+    background: none;
+    cursor: pointer;
+}
+
+.booking-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.booking-container {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+.booking-data {
+    color: grey;
+}
+
+.profile-margins {
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 5%;
+}
+
+.bookings-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.real-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+
+/*! Bookings */
+.current-bookings {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+}
+

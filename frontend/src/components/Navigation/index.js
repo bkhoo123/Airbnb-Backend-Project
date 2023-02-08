@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
-import logo from '../Images/logo.jpg'
 
 import OpenModalButton from '../OpenModalButton';
 import CreateSpotFormModal from '../CreateSpotFormModal';
@@ -12,7 +11,6 @@ function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
   
   
-
   return (
     <div className="nav-bar">
       <span > 

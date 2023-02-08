@@ -10,6 +10,8 @@ import CurrentSpots from "./components/Spots/CurrentSpots";
 import { currentSpots } from "./store/spots";
 import OnlyAuthenticatedUser from "./components/Redirection/OnlyAuthenticatedUser";
 import FavoriteSpot from "./components/Spots/FavoriteSpot";
+import Bookings from "./components/Bookings";
+import Profile from "./components/Profile/profile";
 
 
 function App() {
@@ -52,6 +54,12 @@ function App() {
           </Route>
           <Route path="/favoritespots">
             <FavoriteSpot/>
+          </Route>
+          <Route path="/bookings">
+            <Bookings/>
+          </Route>
+          <Route path="/account">
+            <Profile/>
           </Route>
         </Switch>
       )}

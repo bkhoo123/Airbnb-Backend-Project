@@ -1,25 +1,25 @@
-import { bindActionCreators } from 'redux'
 import {csrfFetch} from './csrf'
 
-
-const LOAD_SPOTS = 'spots/getSpot'
+//! Const Variables
+const GET_ALL_SPOTS = 'spots/getSpot'
 const CREATE_SPOT = 'spots/createSpot'
 const UPDATE_SPOT = 'spots/updateSpot'
-const LOAD_ONESPOT = 'spots/getSpotById'
+const GET_ONE_SPOT = 'spots/getSpotById'
 const DELETE_SPOT = 'spot/deleteSpot'
-const LOAD_CURRENT = 'spots/current'
-const LOAD_FAVORITES = 'spots/favorites'
+const GET_CURRENT_USER_SPOTS = 'spots/current'
+const GET_ALL_FAVORITE_SPOTS = 'spots/getAllFavorites'
 const CREATE_PREVIEWIMAGE = 'spots/postPreviewImage'
 const CREATE_SPOTIMAGE = 'spots/postSpotImage'
 
 
-const actionLoad = spot => ({
-    type: LOAD_SPOTS,
+//! Action Variables on the initial Value
+const actionGetAllSpots = spot => ({
+    type: GET_ALL_SPOTS,
     spot
 })
 
-const actionLoadCurrent = spot => ({
-    type: LOAD_CURRENT,
+const actionGetAllCurrentUserSpots = spot => ({
+    type: GET_CURRENT_USER_SPOTS,
     spot
 })
 
@@ -33,8 +33,8 @@ const actionUpdateOneSpot = spot => ({
     spot,
 })
 
-const actionGetOneSpot = spot => ({
-    type: LOAD_ONESPOT,
+const actionSpotById = spot => ({
+    type: GET_ONE_SPOT,
     spot
 })
 
@@ -43,10 +43,11 @@ const actionDeleteOneSpot = (spot) => ({
     spot
 })
 
-const actionLoadFavorite = spot => ({
-    type: LOAD_FAVORITES,
-    spot
+const actionGetAllFavoriteSpots = favorite => ({
+    type: GET_ALL_FAVORITE_SPOTS,
+    favorite
 })
+
 
 const actionCreatePreviewImage = (spotId, url, preview) => ({
     type: CREATE_PREVIEWIMAGE,
@@ -63,29 +64,33 @@ const actionCreateSpotImage = (spotId, url, preview) => ({
 })
 
 
+
+
 export const getSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots')
     if (response.ok) {
         const spots = await response.json()
-        dispatch(actionLoad(spots))
+        dispatch(actionGetAllSpots(spots))
         return spots
     }
 }
+
+
 
 export const currentSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots/current')
     if (response.ok) {
         const currentSpots = await response.json()
-        dispatch(actionLoadCurrent(currentSpots))
+        dispatch(actionGetAllCurrentUserSpots(currentSpots))
         return currentSpots
     }
 }
 
-export const favoriteSpots = () => async dispatch => {
+export const thunkGetFavoriteSpots = () => async dispatch => {
     const response = await csrfFetch('/api/spots/favorites')
     if (response.ok) {
         const favoriteSpots = await response.json()
-        dispatch(actionLoadFavorite(favoriteSpots))
+        dispatch(actionGetAllFavoriteSpots(favoriteSpots))
         return favoriteSpots
     }
 }
@@ -141,7 +146,7 @@ export const getSpotById = id => async dispatch => {
     const response = await csrfFetch(`/api/spots/${id}`)
     if (response.ok) {
         const spot = await response.json()
-        dispatch(actionGetOneSpot(spot))
+        dispatch(actionSpotById(spot))
         return spot
     }
 }
@@ -149,8 +154,7 @@ export const getSpotById = id => async dispatch => {
 export const deleteSpot = id => async dispatch => {
     const response = await csrfFetch(`/api/spots/${Number(id)}`, {
         method: 'DELETE',
-    })
-    
+    })    
     if (response.ok) {
         const deletedSpot = await response.json()
         dispatch(actionDeleteOneSpot(id))
@@ -197,54 +201,75 @@ export const createSpotImage = (spotId, url, preview) => async dispatch => {
 
 
 
-const initialState = {}
+const initialState = {
+    allSpots: {},
+    singleSpot: {}
+}
+
+const normalize = (spots) => {
+    const data = {}
+    if (spots.Spots) {
+        spots.Spots.forEach(spot => data[spot.id] = spot)
+        return data
+    }
+}
 
 export default function spotsReducer(state = initialState, action) {
     let newState
     switch(action.type) {
-        case LOAD_SPOTS:
-            newState = Object.assign({}, state)
-            action.spot.Spots.forEach(spot => {
-                newState[spot.id] = spot
-            })
+        case GET_ALL_SPOTS: {
+            const newState = {...state} 
+            newState.allSpots = normalize(action.spot)
             return newState
-        case LOAD_CURRENT: 
-            newState = {}
-            action.spot.Spots.forEach(spot => {
-                newState[spot.id] = spot
-            })
+        }
+
+        case GET_CURRENT_USER_SPOTS: {
+            const newState = {...state}
+            newState.allSpots = normalize(action.spot)
             return newState
-        case LOAD_FAVORITES: 
-            newState = []
-            action.spot.Spots.forEach(spot => {
-                newState[spot.id] = spot 
-            })
+        }
+
+        case GET_ALL_FAVORITE_SPOTS: {
+            const newState = {...state}
+            newState.allSpots = normalize(action.favorite)
             return newState
-        case CREATE_SPOT: 
-            newState = Object.assign({}, state)
-            newState[action.spot.id] = action.spot
+        }
+
+        case GET_ONE_SPOT: {
+            const newState = {...state}
+            newState.singleSpot = action.spot
             return newState
-        case UPDATE_SPOT: 
-            
-            newState = Object.assign({}, state)
-            newState[action.spot.id] = action.spot
+        }
+
+        case CREATE_SPOT: {
+            const newState = {...state} 
+            newState.allSpots = {...state.allSpots, [action.spot.id]: action.spot}
             return newState
-        case LOAD_ONESPOT:
-            newState = Object.assign({}, state)
-            newState[action.spot.id]= action.spot
+        }
+
+        case UPDATE_SPOT: {
+            const newState = {...state}
+            newState.allSpots = {...state.allSpots, [action.spot.id]: action.spot}
+            newState.singleSpot = {...state.singleSpot, ...action.spot}
             return newState
-        case DELETE_SPOT: 
-            newState = Object.assign({}, state)
-            delete newState[action.spot]
+        }
+
+        case DELETE_SPOT: {
+            const newState = {...state}
+            delete newState.allSpots[action.spot]
             return newState
+        }
+
         case CREATE_PREVIEWIMAGE: 
             newState = Object.assign({}, state)
             newState = {...state, [action.spotId.previewImage]: action.url}
             return newState
+
         case CREATE_SPOTIMAGE:
             newState = Object.assign({}, state)
             newState = {...state, [action.spotId.SpotImages]: [action.spotId.SpotImages].push(action.url)}
             return newState
+       
     default: 
         return state 
     }

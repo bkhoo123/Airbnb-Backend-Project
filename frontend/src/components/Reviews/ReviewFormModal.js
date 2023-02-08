@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
-import { createSpot } from "../../store/spots";
-import { useHistory, Redirect } from "react-router-dom";
+import { useHistory} from "react-router-dom";
 import { createSpotReview } from "../../store/reviews";
-import { getSpotById } from "../../store/spots";
-import { getSpotReviews } from "../../store/reviews";
+
 
 
 export default function ReviewFormModal({spotId, userId, reviewArr}) {
   const dispatch = useDispatch()
   const history = useHistory()
-  console.log(reviewArr, 'reviewArr')
 
   const [review, setReview] = useState("")
   const [stars, setStars] = useState(3)
