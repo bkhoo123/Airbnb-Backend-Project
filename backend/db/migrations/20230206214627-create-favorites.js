@@ -1,15 +1,13 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
-
-let options = {};
+let options = {}
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Bookings', {
+    await queryInterface.createTable('Favorites', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -29,16 +27,13 @@ module.exports = {
         references: {
           model: 'Users'
         },
-        onDelete: 'CASCADE',
-        allowNull: false
+        allowNull: false,
+        onDelete: 'CASCADE'
       },
-      startDate: {
-        type: Sequelize.DATEONLY,
-        allowNull: false
-      },
-      endDate: {
-        type: Sequelize.DATEONLY,
-        allowNull: false
+      favorites: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
@@ -53,8 +48,7 @@ module.exports = {
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = 'Bookings'
-    await queryInterface.dropTable(options);
+    options.tableName = 'Favorites'
+    await queryInterface.dropTable('Favorites');
   }
 };
-

@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         models.Booking,
         {foreignKey: 'spotId'}
       )
+      Spot.hasMany(
+        models.Favorite,
+        {foreignKey: 'spotId'}
+      )
     }
   }
   Spot.init({
@@ -77,10 +81,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       allowNull: false
     },
-    favorites: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    }
   }, {
     sequelize,
     modelName: 'Spot',

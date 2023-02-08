@@ -85,7 +85,6 @@ module.exports = {
         name: 'BigFoot',
         description: "Come to the Icy Thundra and get a chance to possibly see Big Foot. Guaranteed to be -30F' or colder or your money back",
         price: 123,
-        favorites: false
       },
       {
         ownerId: 7,
@@ -98,7 +97,6 @@ module.exports = {
         name: 'TrueMazeWay',
         description: "Have you ever wanted to live in the rural country side and also go through a maze. This is your chance",
         price: 150.55,
-        favorites: false
       },
       {
         ownerId: 7,
@@ -111,7 +109,6 @@ module.exports = {
         name: 'Breaknam',
         description: 'Come live your dreams next to the great oceans of Mexico',
         price: 127,
-        favorites: false
       },
       {
         ownerId: 1, 
@@ -124,7 +121,6 @@ module.exports = {
         name: 'Tim and Reuben',
         description: 'The Beach life you have always wanted to live out',
         price: 177.50,
-        favorites: true
       },
       {
         ownerId: 1,
@@ -137,7 +133,6 @@ module.exports = {
         name: "Mike Tyson",
         description: 'Enjoy the great views and the Lake and the snow',
         price: 1002,
-        favorites: true
       },
       {
         ownerId: 1,
@@ -150,7 +145,6 @@ module.exports = {
         name: 'Samurai',
         description: 'Live with one with the forest',
         price: 1777,
-        favorites: true
       },
       {
         ownerId: 1,
@@ -163,7 +157,6 @@ module.exports = {
         name: "True Home",
         description: 'Dream Home',
         price: 122,
-        favorites: true
       }
     ], {})
   },

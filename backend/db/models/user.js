@@ -61,6 +61,10 @@ module.exports = (sequelize, DataTypes) => {
         models.Review,
         {foreignKey: 'userId'}
       )
+      User.hasMany(
+        models.Favorite,
+        {foreignKey: 'userId'}
+      )
     }
   };
 

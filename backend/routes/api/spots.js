@@ -2,7 +2,7 @@ const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 
-const {User, Spot, SpotImage, Review, Booking, ReviewImage, sequelize} = require('../../db/models')
+const {User, Spot, SpotImage, Review, Booking, ReviewImage, Favorite, sequelize} = require('../../db/models')
 
 const router = express.Router();
 
@@ -68,17 +68,20 @@ router.get('/', async (req, res, next) => {
             },
             {
                 model: SpotImage
+            },
+            {
+                model: Favorite
             }
         ],
         ...pagination
     })
 
-    let spotsList = []
+    let Spots = []
     spots.forEach((spot) => {
-        spotsList.push(spot.toJSON())
+        Spots.push(spot.toJSON())
     }) 
 
-    for (let spot of spotsList) {
+    for (let spot of Spots) {
         const avgRating = await Review.findAll({
             where: {
                 spotId: spot.id
@@ -105,7 +108,7 @@ router.get('/', async (req, res, next) => {
         delete spot.Reviews
     }
     
-    spotsList.forEach(spot => {
+    Spots.forEach(spot => {
         spot.SpotImages.forEach(image => {
             if (image.preview === true) {
                 spot.previewImage = image.url
@@ -119,7 +122,7 @@ router.get('/', async (req, res, next) => {
 
     res.status(200)
     return res.json({
-        Spots: spotsList,
+        Spots,
         page: page,
         size: size
     })
@@ -148,13 +151,13 @@ router.get('/current', requireAuth, async(req, res, next) => {
         ]
     })
 
-    let spotsList = []
+    let Spots = []
     spots.forEach((spot) => {
-        spotsList.push(spot.toJSON())
+        Spots.push(spot.toJSON())
     })
     
 
-    for (let spot of spotsList) {
+    for (let spot of Spots) {
         const avgRating = await Review.findAll({
             where: {
                 spotId: spot.id
@@ -190,7 +193,7 @@ router.get('/current', requireAuth, async(req, res, next) => {
         })
     }
 
-    spotsList.forEach(spot => {
+    Spots.forEach(spot => {
         spot.SpotImages.forEach(image => {
             if (!image.preview) {
                 spot.previewImage = 'no image available'
@@ -204,7 +207,7 @@ router.get('/current', requireAuth, async(req, res, next) => {
 
     res.status(200)
     return res.json({
-        Spots: spotsList
+        Spots
     })
 })
 
@@ -213,14 +216,14 @@ router.get('/current', requireAuth, async(req, res, next) => {
 //! Get all Spots Favorited by the current User
 router.get('/favorites', requireAuth, async(req, res, next) => {
     let currentUser = req.user.id
-    let favoriteSpots = await Spot.findAll({
-        where: {
-            ownerId: currentUser,
-            favorites: true
-        },
+    let favorites = await Spot.findAll({
         include: [
             {
-                model: Review
+                model: Favorite,
+                where: {
+                    favorites: true,
+                    userId: currentUser
+                },
             },
             {
                 model: SpotImage
@@ -228,13 +231,13 @@ router.get('/favorites', requireAuth, async(req, res, next) => {
         ]
     })
 
-    let spotsList = []
-    favoriteSpots.forEach((spot) => {
-        spotsList.push(spot.toJSON())
+    let Spots = []
+    favorites.forEach((spot) => {
+        Spots.push(spot.toJSON())
     })
     
 
-    for (let spot of spotsList) {
+    for (let spot of Spots) {
         const avgRating = await Review.findAll({
             where: {
                 spotId: spot.id
@@ -257,11 +260,13 @@ router.get('/favorites', requireAuth, async(req, res, next) => {
                 spot.avgRating = 'No reviews have been posted for this location'
             }
         }
+        
+        
         delete spot.Reviews
     } 
 
         //* Handles if current user doesn't own any spots
-    if (!favoriteSpots) {
+    if (!favorites) {
         res.status(404)
         return res.json({
             message: "Spot couldn't be found",
@@ -270,7 +275,7 @@ router.get('/favorites', requireAuth, async(req, res, next) => {
         })
     }
 
-    spotsList.forEach(spot => {
+    Spots.forEach(spot => {
         spot.SpotImages.forEach(image => {
             if (!image.preview) {
                 spot.previewImage = 'no image available'
@@ -282,16 +287,56 @@ router.get('/favorites', requireAuth, async(req, res, next) => {
         delete spot.SpotImages
     })
 
+    Spots.forEach(spot => {
+        spot.Favorites.forEach(favorite => {
+            spot.favorited = favorite.favorites
+            spot.favoriteId = favorite.id
+            spot.favoriteUserId = favorite.userId
+        })
+        delete spot.Favorites
+    })
+
+    
+
     res.status(200)
     return res.json({
-        Spots: spotsList
+        Spots
     })
 })
+    
 
-// // //! Create a Favorite Spot by the Current User 
-// router.put('/favorites', requireAuth, async (req, res, next) => {
 
-// })
+//! Create a Favorite from a Spot based on the Spot's Id
+//? 
+router.post('/:spotId/favorites', requireAuth, async (req, res, next) => {
+    let spotId = req.params.spotId
+    let currentUser = req.user.id
+
+    let favoriteSpot = await Spot.findByPk(spotId, {
+        include: [
+            {
+                model: Favorite,
+            }
+        ]
+    })
+
+    if (!favoriteSpot) {
+        res.status(404)
+        return res.json({
+            message: "Spot couldn't be found",
+            statusCode: 404
+        })
+    }
+
+    //* 
+    const favorited = await Favorite.create({
+        spotId: spotId,
+        userId: currentUser,
+        favorites: true
+    })
+    res.status(200)
+    return res.json(favorited)
+})
 
 
 //! Get details of a Spot from an id 
@@ -310,6 +355,9 @@ router.get('/:spotId', async (req, res, next) => {
             {
                 model: User,
                 as: 'Owner'
+            },
+            {
+                model: Favorite,
             }
         ],
     })
@@ -385,7 +433,8 @@ router.get('/:spotId', async (req, res, next) => {
         numReviews: numReviewss,
         avgStarRating,
         SpotImages: spots.SpotImages,
-        Owner: spots.Owner
+        Owner: spots.Owner,
+        Favorites: spots.Favorites
     })
 })
 
