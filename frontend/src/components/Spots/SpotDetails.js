@@ -29,10 +29,6 @@ export default function SpotDetails({userId, spots, favorites}) {
     })
     if (find) setFavoriteClick("heart-icon-clicked")
     if (!find) setFavoriteClick("heart-icon")
-    // favoritesArray.forEach(favorite => {
-    //   if (spots.id === Number(favorite)) setFavoriteClick("heart-icon-clicked")
-    //   if (spots.id !== Number(favorite)) setFavoriteClick("heart-icon")
-    // })
 
 
   }, [favoriteClick, favorites, dispatch])

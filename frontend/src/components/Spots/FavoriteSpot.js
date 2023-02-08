@@ -40,7 +40,9 @@ export default function FavoriteSpot() {
   if (!favoriteSpots) return null
 
   
-  console.log(filter, 'filter')
+  
+  let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
+
   
   return (
     <div className="currentspots">
@@ -52,7 +54,7 @@ export default function FavoriteSpot() {
       : filter.map((spot, index) => (
         <div className="spot-info">
 
-        <h3>Favorite Location #{index + 1} <button onClick={async (e) => await dispatch(thunkDeleteSpotFavorite(spot.favoriteId))} style={{background: 'None', borderStyle: 'none'}}><i style={{marginLeft: 5, fontSize: 20}} id="hearty" class="fa-solid fa-heart"></i></button> </h3>
+        <h3>{title[spot.id - 1]} <button onClick={async (e) => await dispatch(thunkDeleteSpotFavorite(spot.favoriteId))} style={{background: 'None', borderStyle: 'none'}}><i style={{marginLeft: 5, fontSize: 20}} id="hearty" class="fa-solid fa-heart"></i></button> </h3>
         
         <Link key={spot.id} to={`/spots/${spot.id}`}>  
         <img className="currentspot-images" src={spot.previewImage ? spot.previewImage : "https://a0.muscache.com/im/pictures/miso/Hosting-770519476322190230/original/fba61625-7eb9-4c25-8c64-953749548e6a.jpeg?im_w=1200"} alt="No Preview Image Available"  />
