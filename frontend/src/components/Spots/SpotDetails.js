@@ -56,8 +56,6 @@ export default function SpotDetails({userId, spots, favorites}) {
     }
   }
 
-  
-
   if (!spots) return null
   if (!spots.previewImage) return null
 

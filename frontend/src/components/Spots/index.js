@@ -15,6 +15,7 @@ export default function Spots() {
   const favorites = useSelector(state => state.favorites)
   const user = useSelector(state => state.session)
 
+
   
 
   useEffect(() => {
@@ -24,14 +25,14 @@ export default function Spots() {
 
   const spotsArr = Object.values(spots)
   if (!spots) return null
-  
+  if (!favorites) return null  
 
   return (
     <>
       <div className="spots-container" key={spots.id}>
       {spotsArr.map((spot) => (
         <Link key={spot.id} className="spot-detailslink" to={`/spots/${spot.id}`}>
-        <SpotDetails favorites={favorites} userId={user.user.id} spots={spot}/>
+        <SpotDetails favorites={favorites} userId={user.id} spots={spot}/>
         </Link>
       ))}
       </div>
