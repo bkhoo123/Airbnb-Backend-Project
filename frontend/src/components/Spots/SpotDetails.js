@@ -45,8 +45,6 @@ export default function SpotDetails({userId, spots, favorites}) {
       return Number(favorite.spotId) === Number(spots.id)
     })
     
-
-
     if (favoriteClick === "heart-icon") {
       const newFavorite = await dispatch(thunkCreateSpotFavorite(payload))
       setFavoriteClick("heart-icon-clicked")
@@ -65,7 +63,7 @@ export default function SpotDetails({userId, spots, favorites}) {
         <img className="spot-images"  src={spots.previewImage ? spots.previewImage : "https://a0.muscache.com/im/pictures/miso/Hosting-46695796/original/9bd67185-dc83-4473-a191-9486c62aec66.jpeg?im_w=720"}  alt="No Preview Image Available"  />
         
         <div className="front-spottext">
-        <p  className="location">{spots.city}, {spots.state} <span><i style={{color: 'black', fontSize: '0.65rem'}} className="fa-solid fa-star"></i> {spots.avgRating === "No reviews have been posted for this location" ? spots.avgRating = 0 : Number(spots.avgRating).toFixed(2)}</span></p>
+        <p  className="location">{spots.city}, {spots.state} <span><i style={{color: 'black', fontSize: '0.65rem'}} className="fa-solid fa-star"></i> {spots.avgRating === "New" ? "New" : Number(spots.avgRating).toFixed(1)}</span></p>
         </div>
         <p className='grey'>{fillerDistance[spots.id]} miles away</p>
         <p><span className="dollar">${spots.price}</span> night</p>

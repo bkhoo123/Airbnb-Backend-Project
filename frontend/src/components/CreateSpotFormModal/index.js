@@ -14,10 +14,10 @@ export default function CreateSpotFormModal() {
   const [state, setState] = useState("")
   const [country, setCountry] = useState("")
   const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
+  const [description, setDescription] = useState("description")
   const [price, setPrice] = useState("")
   const [errors, setErrors] = useState([])
-  const [previewImage, setPreviewImage] = useState("")
+  const [previewImage, setPreviewImage] = useState("Preview Image URL")
   const { closeModal } = useModal();
 
 
@@ -86,12 +86,13 @@ export default function CreateSpotFormModal() {
   
   return (
     <div className="signup-form">
-      <h3 style={{textAlign: 'center'}}>Host Your Location!</h3>
+      <h3 style={{textAlign: 'center'}}>Create a New Spot!</h3>
       <ul>
         {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
       </ul>
         <form className="create-spotform" onSubmit={handleSubmit} action="">
-          <label>
+        <h3>Where's Your Place located?</h3>
+          <label className="label">
           Address
           <input
             className="signup-input"
@@ -101,7 +102,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
+        <label className="label">
           City
           <input
             className="signup-input"
@@ -111,7 +112,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
+        <label className="label">
           State
           <input
             className="signup-input"
@@ -121,7 +122,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
+        <label className="label">
           Country
           <input
             className="signup-input"
@@ -131,7 +132,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
+        <label className="label">
           Name
           <input
             className="signup-input"
@@ -141,8 +142,8 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
-          Description
+        <label className="label">
+          Describe Your Place to your Guests
           <input
             className="signup-input"
             type="text"
@@ -151,8 +152,8 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
-          PreviewImage
+        <label className="label">
+          Liven up your spot with photos
           <input
             className="signup-input"
             type="url"
@@ -161,8 +162,8 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <label>
-          Price
+        <label className="label">
+          Set a Base Price for your Spot
           <input
             className="signup-input"
             type="number"
@@ -171,7 +172,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <button disabled={errors.length ? true : false} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1rem', marginTop: 15, width: 180}} type="submit">Submit your House Listing</button>
+        <button disabled={errors.length ? true : false} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1rem', marginTop: 15, width: 180}} type="submit">Create Spot</button>
           </form>
     </div>
   )

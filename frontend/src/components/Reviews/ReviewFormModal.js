@@ -16,9 +16,9 @@ export default function ReviewFormModal({spotId, userId, reviewArr}) {
   const { closeModal } = useModal();
 
   useEffect(() => {
-    const errors = ["Minimum 5 Characters required for Review", "Review stars must be an integer between 1 and 5", "You already have a review posted on this spot"]
+    const errors = ["Minimum 10 Characters required for Review", "Review stars must be an integer between 1 and 5", "You already have a review posted on this spot"]
 
-    if (review.length > 5) errors.splice(errors.indexOf("Minimum 5 Characters required for Review"),1)
+    if (review.length > 10) errors.splice(errors.indexOf("Minimum 10 Characters required for Review"),1)
     if (stars >= 1 && stars <= 5) errors.splice(errors.indexOf("Review stars must be an integer between 1 and 5"), 1)
     
     let boolean = reviewArr.find((review) => {
@@ -54,7 +54,7 @@ export default function ReviewFormModal({spotId, userId, reviewArr}) {
       </ul>
       <form className="create-spotform" onSubmit={handleSubmit}  action="">
           <label>
-          Type your Review Here
+          Leave your Review here...
           <textarea
             className="signup-input"
             type="text"
@@ -65,7 +65,7 @@ export default function ReviewFormModal({spotId, userId, reviewArr}) {
           />
         </label>
         <label>
-          Star Rating
+          Stars
           <input
             className="signup-input"
             type="number"

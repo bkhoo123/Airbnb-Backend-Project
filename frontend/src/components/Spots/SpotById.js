@@ -44,6 +44,11 @@ const SpotById = () => {
     favoritesArray.push(favorite.spotId)
   })
 
+  console.log(reviewArr, 'reviewArr')
+  const sortReview = reviewArr.sort((a, b) => {
+    return Date.parse(b.createdAt) - Date.parse(a.createdAt)
+  })
+  
   
   useEffect(() => {
     dispatch(getSpotReviews(spotId))
@@ -102,6 +107,8 @@ const SpotById = () => {
   }
 
 
+  const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+  
   
   return (
     <>
@@ -112,8 +119,8 @@ const SpotById = () => {
     </h2>
     
     <span style={{fontSize: 20}}><i style={{color: 'black', marginRight: 5}} className="fa-solid fa-star"></i> 
-    {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} 
-    <span> {spot?.numReviews} Reviews </span>
+    {isNaN(Number(average).toFixed(1)) ? "No Reviews Yet" : Number(average).toFixed(1)} 
+    <span> {spot?.numReviews} {spot.numReviews > 1 ? 'Reviews' : 'Review'} </span>
     <span style={({textDecoration: "underline"})}>{spot.address}, {spot.city} {spot.state} {spot.country}</span>
     </span>
 
@@ -156,7 +163,7 @@ const SpotById = () => {
       <h2 className="bookings-buttons">Hosted By: {spot.name} 
         <span className="real-buttons">
             <OpenModalButton
-            buttonText="Bookings / Reserve Spot"
+            buttonText="Reserve"
             modalComponent={<CreateBooking userId={user.id} spotOwnerId={spot.ownerId} bookings={bookings} spotId={spotId} />}
             />
         </span>
@@ -172,8 +179,8 @@ const SpotById = () => {
     
     {/* Reviews */}
       <div style={{marginTop: 15}} className="spotreview-container">
-      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(2)) ? 0 : Number(average).toFixed(2)} · {spot?.numReviews} Reviews 
-      <span style={{paddingLeft: 10}}>
+      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(1)) ? "New" : Number(average).toFixed(1)} · {spot?.numReviews} {spot?.numReviews > 1 ? 'Review' : 'Review'} 
+      <span style={{paddingLeft: 10}} id={user.id === spot.ownerId ? "delete-hidden" : ""}>
         <OpenModalButton
         onButtonClick={() => {spot.numReviews += 1}}
         buttonText="Post Review"
@@ -182,10 +189,15 @@ const SpotById = () => {
       </span>
       </span>
       <div>
-        {reviewArr.map(review => (
+
+        {!sortReview.length 
+        ? <div>
+          <h2>Be the first to post a review!</h2>
+        </div> 
+        : sortReview.map(review => (
           <>
           <hr />
-          <h3 style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}> <i style={{marginRight: 10}} class="fa-solid fa-user"></i> {review.User?.firstName} {review.User?.lastName} 
+          <h3 style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}> <i style={{marginRight: 10}} class="fa-solid fa-user"></i> {review.User?.firstName} 
           {review.User.id === user.id && (
             <span style={{marginLeft: 15}}>
             <EditModalButton
@@ -198,7 +210,7 @@ const SpotById = () => {
           onClick={() => dispatch(deleteSpotReview(review.id)).then(history.push(`/spots/${Number(spotId)}`)).then(spot.numReviews -=1)}><i style={{fontSize: 18, color: "#FF5A5F", cursor: 'pointer' }} class="fa-solid fa-trash-can"></i></button>)}
           </h3>
           <h3 style={{color: 'gray', fontSize: '1rem'}} className="user-review">{review.review}</h3>
-          <span style={{fontFamily: 'monospace'}}>Posted On: {review.createdAt.split("T")[0]}</span>
+          <span style={{fontFamily: 'monospace'}}>Posted On: {month[review.createdAt.split("T")[0].split("-")[1] - 1]} {review.createdAt.split("T")[0].split("-")[2]}, {review.createdAt.split("T")[0].split("-")[0]}</span>
           </>
         ))}
       </div>

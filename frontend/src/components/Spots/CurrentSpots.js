@@ -7,6 +7,7 @@ import { deleteSpot } from '../../store/spots'
 import OpenModalButton from '../OpenModalButton'
 import EditFormModal from '../EditFormModal'
 import { Link } from 'react-router-dom'
+import CreateSpotFormModal from '../CreateSpotFormModal'
 
 export default function CurrentSpots() {
   const history = useHistory()
@@ -32,6 +33,13 @@ export default function CurrentSpots() {
       ? <div>
           <h1>You currently don't own or are hosting any Locations</h1> 
           <h2>You should start hosting to become a billionaire</h2>
+          <div>
+            <OpenModalButton
+            buttonText="Create Spot"
+            modalComponent={<CreateSpotFormModal/>}
+            />
+          </div>
+
        </div>
       : currentArr.map((spot, index) => (
         <div className="spot-info">
