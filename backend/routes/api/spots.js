@@ -100,7 +100,7 @@ router.get('/', async (req, res, next) => {
         for (let avg of avgList) {
             spot.avgRating = avg.avgRating
             if (!spot.avgRating) {
-                spot.avgRating = 'No reviews have been posted for this location'
+                spot.avgRating = 'New'
             }
     
         }
