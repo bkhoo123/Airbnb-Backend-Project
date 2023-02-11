@@ -393,7 +393,7 @@ input {
 }
 
 #heart-icon-clicked:hover {
-    color: white;
+    color: teal;
 }
 
 #hearty {
@@ -418,12 +418,12 @@ input {
 .heart {
     position: relative;
     bottom: 313px;
-    left: 230px;
+    left: 225px;
     opacity: 1;
     border-style: none;
     background-color: opaque;
     background: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
 
 }
 
@@ -577,7 +577,7 @@ input {
 
 
 #spotid-favoriteclicked:hover {
-    color: gray;
+    color: black;
     font-size: 1.5rem;
 }
 

@@ -4,23 +4,23 @@ import { useModal } from "../../context/Modal";
 import { useHistory } from "react-router-dom";
 import { thunkEditSpotReview } from "../../store/reviews";
 
-export default function EditReview({reviewArr, reviewId, spotId, userId}) {
+export default function EditReview({reviewArr, reviewNote, reviewId, spotId, userId}) {
     const dispatch = useDispatch()
     const history = useHistory()
-
+    console.log(reviewArr, 'reviewArr')
     
-    const [review, setReview] = useState("")
+    const [review, setReview] = useState(reviewNote)
     const [stars, setStars] = useState(3)
     const [errors, setErrors] = useState([])
     const {closeModal} = useModal()
 
     useEffect(() => {
         const errors = [
-        "Minimum 5 Characters required for Review", 
+        "Minimum 10 Characters required for Review", 
         "Review stars must be an integer between 1 and 5"
     ]
     
-        if (review.length > 5) errors.splice(errors.indexOf("Minimum 5 Characters required for Review"),1)
+        if (review.length >= 10) errors.splice(errors.indexOf("Minimum 10 Characters required for Review"),1)
         if (stars >= 1 && stars <= 5) errors.splice(errors.indexOf("Review stars must be an integer between 1 and 5"), 1)
         
     

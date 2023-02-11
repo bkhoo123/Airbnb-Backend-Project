@@ -31,6 +31,8 @@ export default function CreateBookingFavorite({userId, spotOwnerId, spotId}) {
       } 
     }
 
+    if (new Date().getTime() > Date.parse(startDate)) errors.push("You cannot book something in the past") 
+
     setErrors(errors)
     
   }, [startDate, endDate, dispatch])

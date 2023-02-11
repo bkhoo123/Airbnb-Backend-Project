@@ -24,10 +24,15 @@ export default function CreateBooking({userId, spotOwnerId, bookings, spotId}) {
     if (userId === spotOwnerId) errors.push("You cannot reserve your own place")
     if (Date.parse(startDate) > Date.parse(endDate)) errors.push("End Date cannot be on or before State Date")
     for (let book of bookingsArray) {
+      
       if (Date.parse(book.startDate) >= Date.parse(startDate) && Date.parse(book.endDate) <= Date.parse(endDate)) {
         errors.push("Start Date and End Date cannot conflict with an existing reservation")
-      } 
+      }
+      
     }
+    
+    if (new Date().getTime() > Date.parse(startDate)) errors.push("You cannot book something in the past") 
+
 
     setErrors(errors)
     

@@ -33,7 +33,7 @@ export default function EditBooking({id, spotId}) {
         errors.push("Start Date and End Date cannot conflict with an existing reservation")
       } 
     }
-    if (new Date())
+    if (new Date().getTime() > Date.parse(startDate)) errors.push("You cannot book something in the past") 
 
     setErrors(errors)
   }, [startDate, endDate, dispatch])

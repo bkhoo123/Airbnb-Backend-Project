@@ -179,7 +179,7 @@ const SpotById = () => {
     
     {/* Reviews */}
       <div style={{marginTop: 15}} className="spotreview-container">
-      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(1)) ? "New" : Number(average).toFixed(1)} · {spot?.numReviews} {spot?.numReviews > 1 ? 'Review' : 'Review'} 
+      <span> <i style={{color: 'black'}} className="fa-solid fa-star"></i> {isNaN(Number(average).toFixed(1)) ? "New" : Number(average).toFixed(1)} · {spot?.numReviews} {spot?.numReviews > 1 ? 'Reviews' : 'Review'} 
       <span style={{paddingLeft: 10}} id={user.id === spot.ownerId ? "delete-hidden" : ""}>
         <OpenModalButton
         onButtonClick={() => {spot.numReviews += 1}}
@@ -202,7 +202,7 @@ const SpotById = () => {
             <span style={{marginLeft: 15}}>
             <EditModalButton
             buttonText= <i style={{fontSize: 18, color: "#FF5A5F"}}  class="fa-solid fa-pen-to-square"></i>
-            modalComponent={<EditReview reviewArr={reviewArr} reviewId={review.id} spotId={spotId} userId={user.id}/>}
+            modalComponent={<EditReview reviewArr={reviewArr} reviewNote={review.review} reviewId={review.id} spotId={spotId} userId={user.id}/>}
             />
           </span>
           )}
