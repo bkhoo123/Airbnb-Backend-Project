@@ -9,7 +9,7 @@ import Tyler from '../Images/Tyler.jpg'
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
-  
+  console.log(sessionUser, 'sessionUser')
   
   return (
     <div className="nav-bar">
@@ -19,7 +19,7 @@ function Navigation({ isLoaded }){
       </span>
       {isLoaded && (
         <span className="nav-rightcontainer">
-          <div>
+          <div id={sessionUser === null ? "delete-hidden" : ""}>
             <OpenModalButton
             buttonText="Host Your Home"
             modalComponent={<CreateSpotFormModal/>}

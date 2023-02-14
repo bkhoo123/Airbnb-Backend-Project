@@ -410,7 +410,7 @@ router.get('/:spotId', async (req, res, next) => {
         delete spots.SpotImages[i].updatedAt
     }
 
-    const {id, ownerId, address, city, state, country, lng, lat, name, description, price, createdAt, updatedAt, avgStarRating, numReviewss} = spots
+    const {id, ownerId, title, address, city, state, country, lng, lat, name, description, price, createdAt, updatedAt, avgStarRating, numReviewss} = spots
     
     delete spots.Reviews
     delete spots.Owner.username
@@ -419,6 +419,7 @@ router.get('/:spotId', async (req, res, next) => {
     return res.json({
         id: id,
         ownerId: ownerId,
+        title: title,
         address: address,
         city: city, 
         state: state,
@@ -441,7 +442,7 @@ router.get('/:spotId', async (req, res, next) => {
 
 //! Create a spot
 router.post('/', requireAuth, async (req, res, next) => {
-    const {address, city, state, country, lat, lng, name, description, price} = req.body
+    const {address, city, title, state, country, lat, lng, name, description, price} = req.body
 
     const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']
 
@@ -556,6 +557,7 @@ router.post('/', requireAuth, async (req, res, next) => {
     let newSpot = await Spot.create({
         ownerId: req.user.id,
         address,
+        title,
         city,
         state,
         country,
@@ -651,7 +653,7 @@ router.put('/:spotId', requireAuth, async (req, res, next) => {
     }
 
     //? Confirmed Functioning and Validation errors are functioning
-    const {address, city, state, country, lat, lng, name, description, price} = req.body    
+    const {address, title, city, state, country, lat, lng, name, description, price} = req.body    
 
     //* Address validation error
     if (!address) {
@@ -685,6 +687,18 @@ router.put('/:spotId', requireAuth, async (req, res, next) => {
             statusCode: 400,
             errors: {
                 state: "State is required"
+            }
+        })
+    }
+
+    //* Title Validation Error
+    if (!title) {
+        res.status(400)
+        return res.json({
+            message: "Validation Error",
+            statusCode: 400,
+            errors: {
+                title: "Title is required"
             }
         })
     }
@@ -763,6 +777,7 @@ router.put('/:spotId', requireAuth, async (req, res, next) => {
 
     updatedSpot.set({
         address: address,
+        title,
         city: city,
         state: state,
         country: country,

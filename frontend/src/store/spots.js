@@ -111,7 +111,7 @@ export const createSpot = spot => async dispatch => {
 }
 
 export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
-    const {address, city, country, createdAt, description, id, lat, lng, name, ownerId, price, state, updatedAt, favorites} = payload
+    const {address, title, city, country, createdAt, description, id, lat, lng, name, ownerId, price, state, updatedAt, favorites} = payload
     const response = await csrfFetch(`/api/spots/${payload.id}`, {
         method: 'PUT',
         headers: {
@@ -125,6 +125,7 @@ export const updateSpot = (payload, Owner, SpotImages) => async (dispatch) => {
             Owner: Owner,
             SpotImages: SpotImages,
             address: address,
+            title: title,
             city: city,
             country: country,
             createdAt: createdAt,

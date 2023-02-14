@@ -11,6 +11,7 @@ export default function EditFormModal({spot, spotId}) {
   
   
   const [address, setAddress] = useState(spot.address)
+  const [title, setTitle] = useState(spot.title)
   const [city, setCity] = useState(spot.city)
   const [state, setState] = useState(spot.state)
   const [country, setCountry] = useState(spot.country)
@@ -27,6 +28,7 @@ export default function EditFormModal({spot, spotId}) {
   useEffect(() => {
     const errors = [
       "Street Address is required",
+      "Name of Location is required",
       "City is required",
       "State is required",
       "Country is required",
@@ -36,6 +38,7 @@ export default function EditFormModal({spot, spotId}) {
     ]
 
     if (address.length > 0) errors.splice(errors.indexOf("Street Address is required"), 1)
+    if (title.length > 0) errors.splice(errors.indexOf("Name of Location is required"), 1)
     if (city.length > 0) errors.splice(errors.indexOf("City is required"), 1)
     if (state.length > 0) errors.splice(errors.indexOf("State is required"), 1)
     if (country.length > 0) errors.splice(errors.indexOf("Country is required"), 1)
@@ -44,7 +47,7 @@ export default function EditFormModal({spot, spotId}) {
     if (price > 0) errors.splice(errors.indexOf("Price must be an integer and is also required and cannot be below 0"), 1)
 
     setErrors(errors)
-  }, [address, city, state, country, name, description, price])
+  }, [address, city, state, country, name, description, price, title])
   
 
   const handleSubmit = async (e) => {
@@ -56,6 +59,7 @@ export default function EditFormModal({spot, spotId}) {
     const payload = {
         ...spot,
         address,
+        title,
         city,
         state,
         country,
@@ -83,12 +87,22 @@ export default function EditFormModal({spot, spotId}) {
         
         <form className="create-spotform" onSubmit={handleSubmit} action="">
           <label>
-          Address
+          Address:
           <input
             className="signup-input"
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            required
+          />
+        </label>
+        <label className="label">
+          Name of Location
+          <input
+            className="signup-input"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </label>
@@ -123,7 +137,7 @@ export default function EditFormModal({spot, spotId}) {
           />
         </label>
         <label>
-          Name
+          Hosted By:
           <input
             className="signup-input"
             type="text"

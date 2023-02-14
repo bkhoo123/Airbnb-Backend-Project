@@ -43,7 +43,7 @@ export default function CurrentSpots() {
        </div>
       : currentArr.map((spot, index) => (
         <div className="spot-info">
-        <h2>Location #{index+1}</h2> 
+        <h2>Hosted Locations # {index + 1}</h2> 
         
         <Link key={spot.id} to={`/spots/${spot.id}`}>  
         <img className="currentspot-images" src={spot.previewImage ? spot.previewImage : "https://a0.muscache.com/im/pictures/miso/Hosting-770519476322190230/original/fba61625-7eb9-4c25-8c64-953749548e6a.jpeg?im_w=1200"} alt="No Preview Image Available"  />

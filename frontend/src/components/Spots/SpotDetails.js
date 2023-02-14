@@ -4,19 +4,19 @@ import { thunkCreateSpotFavorite } from '../../store/favorites'
 import { useState, useEffect } from 'react'
 import { thunkDeleteSpotFavorite } from '../../store/favorites'
 
-export default function SpotDetails({userId, spots, favorites}) {
+export default function SpotDetails({userId, spots, favorites, user}) {
   const dispatch = useDispatch()
 
   const [favoriteClick, setFavoriteClick] = useState("heart-icon")
   const [toggleFavorite, setToggleFavorite] = useState("grayheart")
 
-  const fillerDistance = [389, 55, 389, 77, 1055, 66, 22, 223, 587, 1222, 78, 99, 167]  
+  const fillerDistance = [389, 55, 389, 77, 1055, 66, 22, 223, 587, 1222, 78, 99, 167, 122, 178, 255, 899, 1255]  
 
-  
+  console.log(Object.values(user))
   const superFavorites = Object.values(favorites)
 
   
-  
+
 
   useEffect(() => {
     const favoritesArray = []
@@ -68,7 +68,7 @@ export default function SpotDetails({userId, spots, favorites}) {
         <p className='grey'>{fillerDistance[spots.id]} miles away</p>
         <p><span className="dollar">${spots.price}</span> night</p>
         
-        <button onClick={handleClickFavorite} className="heart"><i id={favoriteClick} class="fa-solid fa-heart" ></i></button>
+        <button onClick={handleClickFavorite} id={Object.values(user)[0] === null ? "delete-hidden" : ""} className="heart"><i id={favoriteClick} class="fa-solid fa-heart" ></i></button>
         
         
     </div>

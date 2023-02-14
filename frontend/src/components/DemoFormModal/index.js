@@ -6,10 +6,12 @@ import { useModal } from "../../context/Modal";
 
 export default function DemoFormModal() {
     const dispatch = useDispatch()
-    const [credential, setCredential] = useState('demo@user.io')
-    const [password, setPassword] = useState('password')
+
     const [errors, setErrors] = useState([])
     const {closeModal} = useModal()
+
+    const credential = 'demo@user.io'
+    const password = 'password'
 
 
     const handleSubmit = (e) => {
@@ -27,30 +29,8 @@ export default function DemoFormModal() {
 
     return (
         <form className="login-form" onSubmit={handleSubmit}>
-      <ul>
-        {errors.map((error, idx) => <li key={idx}>{error}</li>)}
-      </ul>
-      <label className="login-label">
-        Username or Email:
-        <input
-          className="login-input"
-          type="text"
-          value={credential}
-          onChange={(e) => setCredential(e.target.value)}
-          required
-        />
-      </label>
-      <label className="login-label">
-        Password:
-        <input
-          className="login-input"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </label>
-      <button type="submit">Log In</button>
+
+      <button className="insidespot-idbuttons" type="submit">Log In</button>
     </form>
     )
 }

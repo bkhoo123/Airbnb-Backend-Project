@@ -4,13 +4,13 @@ import { useModal } from "../../context/Modal";
 import { useHistory } from "react-router-dom";
 import { thunkEditSpotReview } from "../../store/reviews";
 
-export default function EditReview({reviewArr, reviewNote, reviewId, spotId, userId}) {
+export default function EditReview({reviewArr, reviewNote, reviewId, spotId, userId, reviewStars}) {
     const dispatch = useDispatch()
     const history = useHistory()
-    console.log(reviewArr, 'reviewArr')
+
     
     const [review, setReview] = useState(reviewNote)
-    const [stars, setStars] = useState(3)
+    const [stars, setStars] = useState(reviewStars)
     const [errors, setErrors] = useState([])
     const {closeModal} = useModal()
 

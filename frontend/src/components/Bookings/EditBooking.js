@@ -4,6 +4,8 @@ import { useModal } from "../../context/Modal";
 import { useHistory } from "react-router-dom";
 import { thunkEditBooking } from "../../store/bookings";
 import { thunkGetAllBookings } from "../../store/bookings";
+import OpenModalButton from "../OpenModalButton";
+import DeleteBooking from "./DeleteBooking";
 
 
 export default function EditBooking({id, spotId}) {
@@ -92,7 +94,14 @@ export default function EditBooking({id, spotId}) {
           required
           />
         </label>
-        <button disabled={errors.length ? true: false} className="insidespot-idbuttons" style={{marginTop: 10, marginLeft: 10}} type="submit">Reserve your Location</button>
+        <span>
+        <button disabled={errors.length ? true: false} className="insidespot-idbuttons" style={{marginTop: 10, marginLeft: 10, marginRight: 10}} type="submit">Reserve your Location</button>
+          <OpenModalButton
+          buttonText="Cancel Reservation"
+          modalComponent={<DeleteBooking id={id}/>}
+          />
+        </span>
+
       </form>
       {bookingsArray.map((booking, index) => (
           <div className="current-bookings">

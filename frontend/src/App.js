@@ -12,6 +12,7 @@ import OnlyAuthenticatedUser from "./components/Redirection/OnlyAuthenticatedUse
 import FavoriteSpot from "./components/Spots/FavoriteSpot";
 import Bookings from "./components/Bookings";
 import Profile from "./components/Profile/profile";
+import NotLoggedinSingleSpot from "./components/Spots/NotLoggedinSingleSpot";
 
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
             <CurrentSpots/>
           </Route>
           <Route path="/spots/:spotId">
-          {currentSession === null ? <Redirect to="/authenticate"/> : <SpotById key={spots.id}/>}
+          {currentSession === null ? <NotLoggedinSingleSpot/> : <SpotById key={spots.id}/>}
           </Route>
           <Route path="/authenticate">
             <OnlyAuthenticatedUser/>

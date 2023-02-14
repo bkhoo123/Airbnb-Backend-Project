@@ -10,21 +10,23 @@ export default function CreateSpotFormModal() {
   const history = useHistory()
   
   const [address, setAddress] = useState("")
+  const [title, setTitle] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
   const [country, setCountry] = useState("")
   const [name, setName] = useState("")
-  const [description, setDescription] = useState("description")
+  const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [errors, setErrors] = useState([])
-  const [previewImage, setPreviewImage] = useState("Preview Image URL")
+  const [previewImage, setPreviewImage] = useState("")
   const { closeModal } = useModal();
 
 
   useEffect(() => {
     const errors = [
       "Street Address is required",
-      "City is required",
+      "Name of Location is required",
+      "City is required and character length must be at least 4 characters and less than 100",
       "State is required",
       "Country is required",
       "Name is required and must be less than 50 characters",
@@ -34,7 +36,8 @@ export default function CreateSpotFormModal() {
     ]
 
     if (address.length > 0) errors.splice(errors.indexOf("Street Address is required"), 1)
-    if (city.length > 0) errors.splice(errors.indexOf("City is required"), 1)
+    if (title.length > 0) errors.splice(errors.indexOf("Name of Location is required"), 1)
+    if (city.length >= 4 && city.length <= 100) errors.splice(errors.indexOf("City is required and character length must be at least 4 characters and less than 100"), 1)
     if (state.length > 0) errors.splice(errors.indexOf("State is required"), 1)
     if (country.length > 0) errors.splice(errors.indexOf("Country is required"), 1)
     if (name.length < 50 && name.length > 0) errors.splice(errors.indexOf("Name is required and must be less than 50 characters"), 1)
@@ -45,7 +48,7 @@ export default function CreateSpotFormModal() {
 
     setErrors(errors)
 
-  }, [address, city, state, country, name, description, price, previewImage])
+  }, [address, title, city, state, country, name, description, price, previewImage])
 
 
   const handleSubmit = async (e) => {
@@ -55,6 +58,7 @@ export default function CreateSpotFormModal() {
 
     const payload = {
         address,
+        title,
         city,
         state,
         country,
@@ -87,11 +91,12 @@ export default function CreateSpotFormModal() {
   return (
     <div className="signup-form">
       <h3 style={{textAlign: 'center'}}>Create a New Spot!</h3>
-      <ul>
-        {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
-      </ul>
+     
         <form className="create-spotform" onSubmit={handleSubmit} action="">
         <h3>Where's Your Place located?</h3>
+        <ul>
+        {(errors.map((error, idx) => <li key={idx}>{error}</li>))}
+      </ul>
           <label className="label">
           Address
           <input
@@ -99,6 +104,16 @@ export default function CreateSpotFormModal() {
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            required
+          />
+        </label>
+        <label className="label">
+          Name of Location
+          <input
+            className="signup-input"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </label>
@@ -133,7 +148,7 @@ export default function CreateSpotFormModal() {
           />
         </label>
         <label className="label">
-          Name
+          Hosted By:
           <input
             className="signup-input"
             type="text"
@@ -172,7 +187,7 @@ export default function CreateSpotFormModal() {
             required
           />
         </label>
-        <button disabled={errors.length ? true : false} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1rem', marginTop: 15, width: 180}} type="submit">Create Spot</button>
+        <button disabled={errors.length ? true : false} className="insidespot-idbuttons" style={{fontFamily: 'Helvetica', fontSize: '1rem', marginTop: 15, width: 180, marginBottom: 15}} type="submit">Create Spot</button>
           </form>
     </div>
   )

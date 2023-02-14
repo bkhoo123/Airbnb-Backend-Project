@@ -23,6 +23,10 @@ module.exports = {
         },
         allowNull: false
       },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       address: {
         type: Sequelize.STRING,
         allowNull: false

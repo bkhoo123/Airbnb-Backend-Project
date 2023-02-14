@@ -44,7 +44,6 @@ const SpotById = () => {
     favoritesArray.push(favorite.spotId)
   })
 
-  console.log(reviewArr, 'reviewArr')
   const sortReview = reviewArr.sort((a, b) => {
     return Date.parse(b.createdAt) - Date.parse(a.createdAt)
   })
@@ -75,7 +74,6 @@ const SpotById = () => {
   if (!bookings) return null
   
   //! Detail Arrays
-  let title = ['Invisible House Joshua Tree | Modern Masterpiece', 'Dome Sweet Dome: An OMG! Experience', 'Honey Silo Retreat', 'Paradise Ranch Inn', ' Emotional Healing', 'Fjord Mountains Great Views', 'Barn Stay in a Hedge Maze Free Range Chicken Farm', 'Gaudi Style House', 'On The Rocks Architectural Estate Dramatic Ocean', 'Tahoe Beach & Ski Club', 'Forest of Death Experienced Directly with the Forest', 'Perfect Home of Your Dreams Perfect for Parties' ]
   
   const handleClickDelete = async (e) => {
       e.preventDefault()
@@ -114,7 +112,7 @@ const SpotById = () => {
     <>
     {/* Headers / Images / Review Count / Address / Favorites */}
     <h2>
-    {title[spotId - 1] ? title[spotId - 1] : "Greatest Place Ever to Live"} 
+    {spot.title} 
       <button onClick={handleClickFavorite} style={{borderStyle: 'none', background: 'none', marginLeft: 5}}><i id={favoriteChange} class="fa-solid fa-heart"></i></button>
     </h2>
     
@@ -202,7 +200,7 @@ const SpotById = () => {
             <span style={{marginLeft: 15}}>
             <EditModalButton
             buttonText= <i style={{fontSize: 18, color: "#FF5A5F"}}  class="fa-solid fa-pen-to-square"></i>
-            modalComponent={<EditReview reviewArr={reviewArr} reviewNote={review.review} reviewId={review.id} spotId={spotId} userId={user.id}/>}
+            modalComponent={<EditReview reviewArr={reviewArr} reviewStars={review.stars} reviewNote={review.review} reviewId={review.id} spotId={spotId} userId={user.id}/>}
             />
           </span>
           )}

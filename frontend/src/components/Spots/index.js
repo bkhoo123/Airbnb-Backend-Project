@@ -21,7 +21,7 @@ export default function Spots() {
   useEffect(() => {
     dispatch(spotsActions.getSpots())
     dispatch(thunkCurrentFavoriteSpots())
-  }, [dispatch])
+  }, [dispatch, user])
 
   const spotsArr = Object.values(spots)
   if (!spots) return null
@@ -32,7 +32,7 @@ export default function Spots() {
       <div className="spots-container" key={spots.id}>
       {spotsArr.map((spot) => (
         <Link key={spot.id} className="spot-detailslink" to={`/spots/${spot.id}`}>
-        <SpotDetails favorites={favorites} userId={user.id} spots={spot}/>
+        <SpotDetails user={user} favorites={favorites} userId={user.id} spots={spot}/>
         </Link>
       ))}
       </div>

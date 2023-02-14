@@ -25,20 +25,26 @@ export default function SignupFormModal() {
       "Username is required and must be at least 4 characters",
       "First Name is required",
       "Last Name is required",
-      "Password and Confirmed password does not match"
+      "Password and Confirmed password does not match",
+      "Password is required",
+      "Confirm Password is required"
     ]
 
-    if (email.length > 4) errors.splice(errors.indexOf("Email must have at least 4 characters and be no more than 30 characters"), 1)
+    if (email.length >= 4) errors.splice(errors.indexOf("Email must have at least 4 characters and be no more than 30 characters"), 1)
 
     if (email.includes('@') || email.includes('.com')) errors.splice(errors.indexOf("Email must be a valid email"), 1)
 
-    if (username.length > 4) errors.splice(errors.indexOf("Username is required and must be at least 4 characters"), 1)
+    if (username.length >= 4) errors.splice(errors.indexOf("Username is required and must be at least 4 characters"), 1)
 
-    if (firstName.length > 1) errors.splice(errors.indexOf("First Name is required"), 1) 
+    if (firstName.length > 0) errors.splice(errors.indexOf("First Name is required"), 1) 
 
-    if (lastName.length > 1) errors.splice(errors.indexOf("Last Name is required"), 1)
+    if (lastName.length > 0) errors.splice(errors.indexOf("Last Name is required"), 1)
 
-    if (password === confirmPassword && password.length > 1) errors.splice(errors.indexOf("Password and Confirmed password does not match"), 1)
+    if (password === confirmPassword) errors.splice(errors.indexOf("Password and Confirmed password does not match"), 1)
+
+    if (password.length > 0) errors.splice(errors.indexOf("Password is required"), 1)
+
+    if (confirmPassword.length > 0) errors.splice(errors.indexOf("Confirm Password is required"), 1)
 
     setErrors(errors)
 
@@ -121,7 +127,7 @@ export default function SignupFormModal() {
           required
         />
       </label>
-      <button disabled={errors.length ? true : false} className="submit-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 10, height: 40, width: '15vw'}} type="submit">Sign Up</button>
+      <button disabled={errors.length ? true : false} className="submit-button" style={{fontFamily: 'Montserrat', fontSize: '1rem', marginTop: 15, color: "white", borderStyle: 'none', backgroundColor: "#FF5A5F", borderRadius: 5, height: '40px', width: '150px'}} type="submit">Sign Up</button>
       <div style={{height: 40}}>
         <OpenModalButton
         buttonText="Log In"

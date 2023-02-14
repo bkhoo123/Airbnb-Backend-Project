@@ -16,6 +16,7 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       { 
         ownerId: 3,
+        title: 'Invisible House Joshua Tree | Modern Masterpiece',
         address: '27 Joshua Tree',
         city: 'Joshua Tree',
         state: 'California',
@@ -28,6 +29,7 @@ module.exports = {
       },
       {
         ownerId: 2,
+        title: 'Dome Sweet Dome: An OMG! Experience',
         address: '307 Dome Haven St',
         city: 'Bend',
         state: 'Oregon',
@@ -40,6 +42,7 @@ module.exports = {
       },
       {
         ownerId: 3,
+        title: 'Honey Silo Retreat',
         address: '777 WildWest Retreat',
         city: 'Kalispell',
         state: 'Montana',
@@ -52,6 +55,7 @@ module.exports = {
       },
       {
         ownerId: 4,
+        title: 'Paradise Ranch Inn',
         address: '123 Windowed Nature',
         city: 'Three Rivers',
         state: 'California',
@@ -64,6 +68,7 @@ module.exports = {
       },
       {
         ownerId: 2,
+        title: ' Emotional Healing',
         address: '999 Guitar Way',
         city: "Sindun-Myeon",
         state: 'Incheon-Si',
@@ -76,6 +81,7 @@ module.exports = {
       },
       {
         ownerId: 6,
+        title: 'Fjord Mountains Great Views',
         address: '170 Harsh Thundra',
         city: 'Forde',
         state: 'Vestland Fylke',
@@ -88,6 +94,7 @@ module.exports = {
       },
       {
         ownerId: 7,
+        title: 'Barn Stay in a Hedge Maze Free Range Chicken Farm',
         address: '123 HedgeMaze',
         city: 'Tambon',
         state: 'Chang Wat',
@@ -100,6 +107,7 @@ module.exports = {
       },
       {
         ownerId: 7,
+        title: 'Gaudi Style House',
         address: '999 Gaudi Style',
         city: 'La Paz',
         state: 'Baja California',
@@ -112,6 +120,7 @@ module.exports = {
       },
       {
         ownerId: 1, 
+        title: 'On The Rocks Architectural Estate Dramatic Ocean',
         address: '177 Jenner Beach',
         city: 'Jenner',
         state: 'California',
@@ -124,6 +133,7 @@ module.exports = {
       },
       {
         ownerId: 1,
+        title: 'Tahoe Beach & Ski Club',
         address: 'South Lake Tahoe Blvd',
         city: 'South Lake Tahoe',
         state: 'California',
@@ -136,6 +146,7 @@ module.exports = {
       },
       {
         ownerId: 1,
+        title: 'Forest of Death Experienced Directly with the Forest',
         address: 'Forest of Death',
         city: 'Kyoto',
         state: 'Kyoto Fu',
@@ -148,6 +159,7 @@ module.exports = {
       },
       {
         ownerId: 1,
+        title: 'Perfect Home of Your Dreams Perfect for Parties',
         address: '3817 Caledonia Bay Lookout',
         city: 'Pacific Grove',
         state: 'California',
