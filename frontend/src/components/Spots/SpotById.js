@@ -135,7 +135,7 @@ const SpotById = () => {
       
       {spot.SpotImages?.length !== 0 ? (
         <div className ='spot-idcontainer' style={{paddingTop: 5}}>       
-        <img className="spot-idimages" src={spot.SpotImages[0].url} alt="Server undergoing Maintenence" />
+        <img className="spot-idimages" src={spot.SpotImages[0]?.url} alt="Server undergoing Maintenence" />
         <div className = "right-spotidcontainer">
             <img className="spotidright-image" src={spot.SpotImages[1]?.url ? spot.SpotImages[1].url : "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"}  alt="No Image at the moment" />
             <img className="spotidright-image" src={spot.SpotImages[2]?.url ? spot.SpotImages[2].url : "https://images.unsplash.com/photo-1554797589-7241bb691973?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=872&q=80"}  alt="No Image at the moment" />

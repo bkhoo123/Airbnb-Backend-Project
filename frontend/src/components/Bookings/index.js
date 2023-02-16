@@ -21,7 +21,7 @@ export default function Bookings() {
 
   
   const currentBookingsArray = Object.values(currentBookings)
-
+  
 
   return (
     <div >
@@ -30,7 +30,7 @@ export default function Bookings() {
       {currentBookingsArray.map((booking, index) => (
         <div className="booking-container">
           <Link key={booking.spotId} to={`/spots/${booking.spotId}`}>
-          <img className = "currentbooking-images" src={booking.Spot?.previewImage} alt="No Image Preview available" />
+          <img className = "currentbooking-images" src={booking?.Spot?.previewImage} alt="No Image Preview available" />
           </Link>
           <span className="booking-info">
           <span>{booking.Spot?.city}, {booking.Spot?.state}</span>

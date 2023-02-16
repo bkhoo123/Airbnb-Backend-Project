@@ -9,7 +9,7 @@ import Tyler from '../Images/Tyler.jpg'
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
-  console.log(sessionUser, 'sessionUser')
+  
   
   return (
     <div className="nav-bar">
